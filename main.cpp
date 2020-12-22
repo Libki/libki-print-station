@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QSettings>
 
 int main(int argc, char *argv[])
 {
@@ -8,15 +9,14 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
+    QCoreApplication::setOrganizationName("Libki");
+    QCoreApplication::setOrganizationDomain("libki.org");
+    QCoreApplication::setApplicationName("Libki Jamex Payment Processor");
 
-    QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &app, [url](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl)
-            QCoreApplication::exit(-1);
-    }, Qt::QueuedConnection);
-    engine.load(url);
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+    QSettings settings;
+    settings.setIniCodec("UTF-8");
 
+    QQmlApplicationEngine engine("qrc:/main.qml");
     return app.exec();
 }

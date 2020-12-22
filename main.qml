@@ -2,12 +2,18 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
+import io.qt.libki_jamex.backend 1.0
+
 
 Window {
     width: 1024
     height: 768
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("Libki Jamex Payment Processor")
+
+    BackEnd {
+        id: backend
+    }
 
     Row {
         id: row
@@ -22,9 +28,6 @@ Window {
             y: 0
             width: parent.width
             height: parent.height
-            anchors.top: parent.top
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
 
             BorderImage {
                 anchors.top: parent.top
@@ -53,6 +56,7 @@ Window {
                     id: textFieldUsername
                     focus: true
                     placeholderText: qsTr("Enter username")
+                    onEditingFinished: backend.userName = text
                 }
 
                 Label {

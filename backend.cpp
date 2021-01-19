@@ -12,9 +12,27 @@ QString BackEnd::userName()
 
 void BackEnd::setUserName(const QString &userName)
 {
+    qDebug() << "BackEnd::setUserName";
+
     if (userName == m_userName)
         return;
 
     m_userName = userName;
     emit userNameChanged();
+}
+
+QString BackEnd::userPassword()
+{
+    return m_userPassword;
+}
+
+void BackEnd::setUserPassword(const QString &userPassword)
+{
+    qDebug() << "BackEnd::setUserPassword";
+
+    if (userPassword == m_userPassword)
+        return;
+
+    m_userPassword = userPassword;
+    emit userPasswordChanged();
 }

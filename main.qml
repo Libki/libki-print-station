@@ -4,7 +4,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
 import io.qt.libki_jamex.backend 1.0
 
-
 Window {
     width: 1024
     height: 768
@@ -76,6 +75,7 @@ Window {
                         id: textFieldPassword
                         echoMode: TextInput.Password
                         placeholderText: qsTr("Enter password")
+                        onEditingFinished: backend.userPassword = text
                     }
 
                     Text{}

@@ -32,3 +32,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     backend.h
+
+INCLUDEPATH += "C:/jamex"

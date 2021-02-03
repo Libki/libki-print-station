@@ -5,23 +5,52 @@
 BackEnd::BackEnd(QObject *parent) :
     QObject(parent)
 {
-    QLibrary myLib("JPClibs");
-    myLib.load();
-    if ( myLib.isLoaded() ) {
+    QLibrary jpcLibs("JPClibs");
+    jpcLibs.load();
+    if ( jpcLibs.isLoaded() ) {
         qDebug() << "JAMEX LIBRARY LOADED SUCCESSFULLY";
     } else {
         qDebug() << "JAMEX LIBRARY FAILED TO LOAD";
     }
 
+//  typedef void (*MyPrototype)(int*, int*, int*);
+//  MyPrototype sub = (MyPrototype) myLib.resolve("sub");
+//  if (sub) {
+//      sub(&a, &b, &c);
+//  }
+
     typedef void* (*JpcGetHandleFunction)();
-    JpcGetHandleFunction jpc_get_handle_func = (JpcGetHandleFunction) myLib.resolve("jpc_get_handle");
+    JpcGetHandleFunction jpc_get_handle_func = (JpcGetHandleFunction) jpcLibs.resolve("jpc_get_handle");
+
+    typedef bool (*JpcOpenFunction)(void*);
+    JpcOpenFunction jpc_open_func = (JpcOpenFunction) jpcLibs.resolve("jpc_open");
+
+    typedef int (*JpcGetErrorFunction)(void*);
+    JpcGetErrorFunction jpc_get_error_func = (JpcGetErrorFunction) jpcLibs.resolve("jpc_get_error");
 
     void* handle;
-    if (sub) {
+    if (jpc_get_handle_func) {
         qDebug() << "Sub jpc_get_handle exists!";
-        //sub(&a, &b, &c);
-        handle = sub();
+        handle = jpc_get_handle_func();
         qDebug() << "HANDLE: " << handle;
+
+        if ( handle ) {
+            bool is_open;
+            is_open = jpc_open_func( handle );
+            qDebug() << "IS OPENED: " << is_open;
+
+            if ( is_open ) {
+                qDebug() << "HANDLE IS OPEN!";
+            } else {
+                qDebug() << "HANDLE FAILED TO OPEN!";
+                int error;
+                error = jpc_get_error_func(handle);
+                qDebug() << "ERRROR CODE: " << error;
+            }
+        }
+        //jpc_get_handle_func(&a, &b, &c);
+        //handle = jpc_get_handle_func();
+        //qDebug() << "HANDLE: " << handle;
     } else {
         qDebug() << "Sub jpc_get_handle does not exist!";
     }

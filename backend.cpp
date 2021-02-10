@@ -13,44 +13,49 @@ BackEnd::BackEnd(QObject *parent) :
         qDebug() << "JAMEX LIBRARY FAILED TO LOAD";
     }
 
-//  typedef void (*MyPrototype)(int*, int*, int*);
-//  MyPrototype sub = (MyPrototype) myLib.resolve("sub");
-//  if (sub) {
-//      sub(&a, &b, &c);
-//  }
-
     typedef void* (*JpcGetHandleFunction)();
     JpcGetHandleFunction jpc_get_handle_func = (JpcGetHandleFunction) jpcLibs.resolve("jpc_get_handle");
 
     typedef bool (*JpcOpenFunction)(void*);
     JpcOpenFunction jpc_open_func = (JpcOpenFunction) jpcLibs.resolve("jpc_open");
 
+    typedef bool (*JpcOpenPortFunction)(void*, char*);
+    JpcOpenPortFunction jpc_open_port_func = (JpcOpenPortFunction) jpcLibs.resolve("jpc_open_port");
+
     typedef int (*JpcGetErrorFunction)(void*);
     JpcGetErrorFunction jpc_get_error_func = (JpcGetErrorFunction) jpcLibs.resolve("jpc_get_error");
 
     void* handle;
     if (jpc_get_handle_func) {
-        qDebug() << "Sub jpc_get_handle exists!";
         handle = jpc_get_handle_func();
         qDebug() << "HANDLE: " << handle;
 
-        if ( handle ) {
-            bool is_open;
-            is_open = jpc_open_func( handle );
-            qDebug() << "IS OPENED: " << is_open;
+        bool is_open = false;
 
-            if ( is_open ) {
-                qDebug() << "HANDLE IS OPEN!";
-            } else {
-                qDebug() << "HANDLE FAILED TO OPEN!";
-                int error;
-                error = jpc_get_error_func(handle);
-                qDebug() << "ERRROR CODE: " << error;
+        if ( handle ) {
+            if ( !is_open ) {
+                is_open = jpc_open_func( handle );
+                qDebug() << "RESULT OF jpc_open: " << is_open;
+
+                if ( !is_open ) {
+                    int error;
+                    error = jpc_get_error_func(handle);
+                    qDebug() << "ERRROR CODE: " << error;
+                }
+            }
+
+            if ( !is_open ) {
+                char* port = strdup("COM4");
+                is_open = jpc_open_port_func( handle, port );
+                qDebug() << "RESULT OF jpc_open_port: " << is_open;
+
+                if ( !is_open ) {
+                    int error;
+                    error = jpc_get_error_func(handle);
+                    qDebug() << "ERRROR CODE: " << error;
+                }
             }
         }
-        //jpc_get_handle_func(&a, &b, &c);
-        //handle = jpc_get_handle_func();
-        //qDebug() << "HANDLE: " << handle;
     } else {
         qDebug() << "Sub jpc_get_handle does not exist!";
     }

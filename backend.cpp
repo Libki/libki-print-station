@@ -5,25 +5,56 @@
 BackEnd::BackEnd(QObject *parent) :
     QObject(parent)
 {
-    QLibrary jpcLibs("JPClibs");
-    jpcLibs.load();
-    if ( jpcLibs.isLoaded() ) {
+    if ( QLibrary::isLibrary("JPClibs.dll") ) {
+        qDebug() << "JAMEX LIBRARY FOUND!";
+    } else {
+        qDebug() << "JAMEX LIBRARY NOT FOUND!?!";
+    }
+
+    QLibrary lib("JPClibs");
+    lib.load();
+
+    if ( lib.isLoaded() ) {
         qDebug() << "JAMEX LIBRARY LOADED SUCCESSFULLY";
     } else {
-        qDebug() << "JAMEX LIBRARY FAILED TO LOAD";
+        qDebug() << "JAMEX LIBRARY FAILED TO LOAD: " << lib.errorString();
     }
 
     typedef void* (*JpcGetHandleFunction)();
-    JpcGetHandleFunction jpc_get_handle_func = (JpcGetHandleFunction) jpcLibs.resolve("jpc_get_handle");
+    //JpcGetHandleFunction jpc_get_handle_func = (JpcGetHandleFunction) lib.resolve("jpc_get_handle");
+    auto jpc_get_handle_func = (JpcGetHandleFunction) lib.resolve("jpc_get_handle");
+    if ( jpc_get_handle_func ) {
+        qDebug() << "SYMBOL jpc_get_handle WAS LOADED!";
+    } else {
+        qDebug() << "SYMBOL jpc_get_handle WAS NOT LOADED!";
+    }
 
     typedef bool (*JpcOpenFunction)(void*);
-    JpcOpenFunction jpc_open_func = (JpcOpenFunction) jpcLibs.resolve("jpc_open");
+    //JpcOpenFunction jpc_open_func = (JpcOpenFunction) lib.resolve("jpc_open");
+    auto jpc_open_func = (JpcOpenFunction) lib.resolve("jpc_open");
+    if ( jpc_open_func ) {
+        qDebug() << "SYMBOL jpc_open WAS LOADED!";
+    } else {
+        qDebug() << "SYMBOL jpc_open WAS NOT LOADED!";
+    }
 
     typedef bool (*JpcOpenPortFunction)(void*, char*);
-    JpcOpenPortFunction jpc_open_port_func = (JpcOpenPortFunction) jpcLibs.resolve("jpc_open_port");
+    //JpcOpenPortFunction jpc_open_port_func = (JpcOpenPortFunction) lib.resolve("jpc_open_port");
+    auto jpc_open_port_func = (JpcOpenPortFunction) lib.resolve("jpc_open_port");
+    if ( jpc_open_port_func ) {
+        qDebug() << "SYMBOL jpc_open_port WAS LOADED!";
+    } else {
+        qDebug() << "SYMBOL jpc_open_port WAS NOT LOADED!";
+    }
 
     typedef int (*JpcGetErrorFunction)(void*);
-    JpcGetErrorFunction jpc_get_error_func = (JpcGetErrorFunction) jpcLibs.resolve("jpc_get_error");
+    //JpcGetErrorFunction jpc_get_error_func = (JpcGetErrorFunction) lib.resolve("jpc_get_error");
+    auto jpc_get_error_func = (JpcGetErrorFunction) lib.resolve("jpc_get_error");
+    if ( jpc_get_error_func ) {
+        qDebug() << "SYMBOL jpc_get_error WAS LOADED!";
+    } else {
+        qDebug() << "SYMBOL jpc_get_error WAS NOT LOADED!";
+    }
 
     void* handle;
     if (jpc_get_handle_func) {
@@ -52,7 +83,7 @@ BackEnd::BackEnd(QObject *parent) :
                 if ( !is_open ) {
                     int error;
                     error = jpc_get_error_func(handle);
-                    qDebug() << "ERRROR CODE: " << error;
+                    qDebug() << "ERROR CODE: " << error;
                 }
             }
         }

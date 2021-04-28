@@ -2,16 +2,34 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
-import io.qt.libki_jamex.backend 1.0
+//import io.qt.libki_jamex.backend 1.0
 
 Window {
+    id: mainWindow
     width: 1024
     height: 768
     visible: true
+    visibility: "Maximized"
     title: qsTr("Libki Jamex Payment Processor")
 
     BackEnd {
         id: backend
+    }
+
+    Component {
+        id:  popupWindow
+        Window {
+            title: "Popup window"
+            width: 400
+            height: 400
+            visible: true
+            flags: Qt.Dialog
+            modality: Qt.ApplicationModal
+            Text {
+                anchors.centerIn: parent
+                text: "Close me to show main window"
+            }
+        }
     }
 
     Row {
@@ -85,26 +103,22 @@ Window {
                         text: qsTr("Log in")
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         enabled: textFieldUsername.length && textFieldPassword.length
+                        onClicked: {
+                            var window = popupWindow.createObject(mainWindow);
+                            mainWindow.hide();
+                            conn.target = window;
+                        }
                     }
                 }
             }
         }
 
-        Label {
-            anchors.top: parent.top
-            clip: false
-            anchors.left: parent.left
-            width: parent.width
-            height: parent.height
-            visible: true
-            id: test
-            text: "This is a test"
+        Connections {
+            id: conn
+            onVisibleChanged: {
+                mainWindow.show();
+                mainWindow.visibility = 'Maximized';
+            }
         }
     }
 }
-
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
-##^##*/

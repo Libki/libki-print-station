@@ -35,3 +35,6 @@ HEADERS += \
     jamex/JPClibs.h
 
 INCLUDEPATH += 3rdparty/JPClibs/include
+
+DISTFILES += \
+    methods.js

@@ -23,6 +23,8 @@ public:
     QString userPassword();
     void setUserPassword(const QString &userPassword);
 
+    QString getLibkiServerAddress();
+
 signals:
     void userNameChanged();
     void userPasswordChanged();

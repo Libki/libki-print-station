@@ -1,6 +1,7 @@
 #include "backend.h"
 
 #include <QLibrary>
+#include <QSettings>
 
 typedef void * ( * JpcGetHandleFunction)();
 typedef bool( * JpcOpenFunction)(void * );
@@ -79,4 +80,11 @@ void BackEnd::setUserPassword(const QString & userPassword) {
 
     m_userPassword = userPassword;
     emit userPasswordChanged();
+}
+
+QString BackEnd::getLibkiServerAddress() {
+    QSettings settings;
+    settings.setIniCodec("UTF-8");
+    QString serverAddress = settings.value("server/address").toString();
+    return serverAddress;
 }

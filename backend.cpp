@@ -2,103 +2,62 @@
 
 #include <QLibrary>
 
-BackEnd::BackEnd(QObject *parent) :
-    QObject(parent)
-{
-    if ( QLibrary::isLibrary("JPClibs.dll") ) {
-        qDebug() << "JAMEX LIBRARY FOUND!";
-    } else {
-        qDebug() << "JAMEX LIBRARY NOT FOUND!?!";
-    }
+typedef void * ( * JpcGetHandleFunction)();
+typedef bool( * JpcOpenFunction)(void * );
+typedef bool( * JpcOpenPortFunction)(void * , char * );
+typedef int( * JpcGetErrorFunction)(void * );
+typedef double( * JpcReadValueFunction)(void * );
 
-    QLibrary lib("JPClibs");
-    lib.load();
+BackEnd::BackEnd(QObject * parent):
+    QObject(parent) {
+        if (QLibrary::isLibrary("JPClibs.dll")) {
+            qDebug() << "JAMEX LIBRARY FOUND!";
+        } else {
+            qDebug() << "JAMEX LIBRARY NOT FOUND!?!";
+        }
 
-    if ( lib.isLoaded() ) {
-        qDebug() << "JAMEX LIBRARY LOADED SUCCESSFULLY";
-    } else {
-        qDebug() << "JAMEX LIBRARY FAILED TO LOAD: " << lib.errorString();
-    }
+        QLibrary jamexLib("JPClibs");
+        JpcGetHandleFunction jpc_get_handle_func = (JpcGetHandleFunction) jamexLib.resolve("jpc_get_handle");
+        JpcOpenFunction jpc_open_func = (JpcOpenFunction) jamexLib.resolve("jpc_open");
+        JpcOpenPortFunction jpc_open_port_func = (JpcOpenPortFunction) jamexLib.resolve("jpc_open_port");
+        JpcGetErrorFunction jpc_get_error_func = (JpcGetErrorFunction) jamexLib.resolve("jpc_get_error");
+        JpcReadValueFunction jpc_read_value_func = (JpcReadValueFunction) jamexLib.resolve("jpc_read_value");
 
-    typedef void* (*JpcGetHandleFunction)();
-    //JpcGetHandleFunction jpc_get_handle_func = (JpcGetHandleFunction) lib.resolve("jpc_get_handle");
-    auto jpc_get_handle_func = (JpcGetHandleFunction) lib.resolve("jpc_get_handle");
-    if ( jpc_get_handle_func ) {
-        qDebug() << "SYMBOL jpc_get_handle WAS LOADED!";
-    } else {
-        qDebug() << "SYMBOL jpc_get_handle WAS NOT LOADED!";
-    }
+        if (jamexLib.load()) {
+            qDebug() << "Jamex library loaded!";
+        } else {
+            qDebug() << "Failed to load Jamex library!";
+        }
 
-    typedef bool (*JpcOpenFunction)(void*);
-    //JpcOpenFunction jpc_open_func = (JpcOpenFunction) lib.resolve("jpc_open");
-    auto jpc_open_func = (JpcOpenFunction) lib.resolve("jpc_open");
-    if ( jpc_open_func ) {
-        qDebug() << "SYMBOL jpc_open WAS LOADED!";
-    } else {
-        qDebug() << "SYMBOL jpc_open WAS NOT LOADED!";
-    }
+        void * handle;
+        if (jpc_get_handle_func) {
+            handle = jpc_get_handle_func();
+            qDebug() << "HANDLE: " << handle;
 
-    typedef bool (*JpcOpenPortFunction)(void*, char*);
-    //JpcOpenPortFunction jpc_open_port_func = (JpcOpenPortFunction) lib.resolve("jpc_open_port");
-    auto jpc_open_port_func = (JpcOpenPortFunction) lib.resolve("jpc_open_port");
-    if ( jpc_open_port_func ) {
-        qDebug() << "SYMBOL jpc_open_port WAS LOADED!";
-    } else {
-        qDebug() << "SYMBOL jpc_open_port WAS NOT LOADED!";
-    }
+            bool is_open = false;
 
-    typedef int (*JpcGetErrorFunction)(void*);
-    //JpcGetErrorFunction jpc_get_error_func = (JpcGetErrorFunction) lib.resolve("jpc_get_error");
-    auto jpc_get_error_func = (JpcGetErrorFunction) lib.resolve("jpc_get_error");
-    if ( jpc_get_error_func ) {
-        qDebug() << "SYMBOL jpc_get_error WAS LOADED!";
-    } else {
-        qDebug() << "SYMBOL jpc_get_error WAS NOT LOADED!";
-    }
+            if (handle) {
+                    is_open = jpc_open_func(handle);
+                    qDebug() << "RESULT OF jpc_open: " << is_open;
 
-    void* handle;
-    if (jpc_get_handle_func) {
-        handle = jpc_get_handle_func();
-        qDebug() << "HANDLE: " << handle;
+                    if (!is_open) {
+                        int error;
+                        error = jpc_get_error_func(handle);
+                        qDebug() << "ERRROR CODE: " << error;
+                    }
+                    //TODO: Add some kind of popup if there is an error connecting
 
-        bool is_open = false;
-
-        if ( handle ) {
-            if ( !is_open ) {
-                is_open = jpc_open_func( handle );
-                qDebug() << "RESULT OF jpc_open: " << is_open;
-
-                if ( !is_open ) {
-                    int error;
-                    error = jpc_get_error_func(handle);
-                    qDebug() << "ERRROR CODE: " << error;
-                }
-            }
-
-            if ( !is_open ) {
-                char* port = strdup("COM4");
-                is_open = jpc_open_port_func( handle, port );
-                qDebug() << "RESULT OF jpc_open_port: " << is_open;
-
-                if ( !is_open ) {
-                    int error;
-                    error = jpc_get_error_func(handle);
-                    qDebug() << "ERROR CODE: " << error;
-                }
+                    double val = jpc_read_value_func( handle );
+                    qDebug() << "VAL: " << val;
             }
         }
-    } else {
-        qDebug() << "Sub jpc_get_handle does not exist!";
     }
-}
 
-QString BackEnd::userName()
-{
+QString BackEnd::userName() {
     return m_userName;
 }
 
-void BackEnd::setUserName(const QString &userName)
-{
+void BackEnd::setUserName(const QString & userName) {
     qDebug() << "BackEnd::setUserName";
 
     if (userName == m_userName)
@@ -108,13 +67,11 @@ void BackEnd::setUserName(const QString &userName)
     emit userNameChanged();
 }
 
-QString BackEnd::userPassword()
-{
+QString BackEnd::userPassword() {
     return m_userPassword;
 }
 
-void BackEnd::setUserPassword(const QString &userPassword)
-{
+void BackEnd::setUserPassword(const QString & userPassword) {
     qDebug() << "BackEnd::setUserPassword";
 
     if (userPassword == m_userPassword)

@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QString>
+#include <QLibrary>
+
 #include <qqml.h>
 
 class BackEnd : public QObject

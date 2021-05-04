@@ -9,8 +9,7 @@ typedef bool( * JpcOpenPortFunction)(void * , char * );
 typedef int( * JpcGetErrorFunction)(void * );
 typedef double( * JpcReadValueFunction)(void * );
 
-BackEnd::BackEnd(QObject * parent):
-    QObject(parent) {
+BackEnd::BackEnd(QObject * parent): QObject(parent) {
         if (QLibrary::isLibrary("JPClibs.dll")) {
             qDebug() << "JAMEX LIBRARY FOUND!";
         } else {
@@ -52,7 +51,23 @@ BackEnd::BackEnd(QObject * parent):
                     qDebug() << "VAL: " << val;
             }
         }
-    }
+}
+
+QString BackEnd::serverAddress() {
+    QSettings settings;
+    settings.setIniCodec("UTF-8");
+    QString libkiServerAddress = settings.value("server/address").toString();
+    qDebug() << "LIBKI SERVER ADDRESS: " << libkiServerAddress;
+    return libkiServerAddress;
+}
+
+QString BackEnd::serverApiKey() {
+    QSettings settings;
+    settings.setIniCodec("UTF-8");
+    QString libkiServerApiKey = settings.value("server/api_key").toString();
+    qDebug() << "LIBKI SERVER API KEY: " << libkiServerApiKey;
+    return libkiServerApiKey;
+}
 
 QString BackEnd::userName() {
     return m_userName;
@@ -80,11 +95,4 @@ void BackEnd::setUserPassword(const QString & userPassword) {
 
     m_userPassword = userPassword;
     emit userPasswordChanged();
-}
-
-QString BackEnd::getLibkiServerAddress() {
-    QSettings settings;
-    settings.setIniCodec("UTF-8");
-    QString serverAddress = settings.value("server/address").toString();
-    return serverAddress;
 }

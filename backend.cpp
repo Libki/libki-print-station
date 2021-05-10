@@ -2,16 +2,24 @@
 
 #include <QLibrary>
 #include <QSettings>
+#include <QString>
 #include <QTimer>
 
 typedef void * ( * JpcGetHandleFunction)();
 typedef bool( * JpcOpenFunction)(void * );
+typedef bool( * JpcCloseFunction)(void * );
 typedef bool( * JpcOpenPortFunction)(void * , char * );
 typedef int( * JpcGetErrorFunction)(void * );
 typedef double( * JpcReadValueFunction)(void * );
 
 BackEnd::BackEnd(QObject * parent): QObject(parent) {
+    qDebug() << "Backend::Backend()";
+
     settings.setIniCodec("UTF-8");
+
+    m_jamexBalance = 0.00;
+
+    jamexIsConnected = false;
 
     if (QLibrary::isLibrary("JPClibs.dll")) {
         qDebug() << "JAMEX LIBRARY FOUND!";
@@ -22,6 +30,7 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
     QLibrary jamexLib("JPClibs");
     jpc_get_handle_func = (JpcGetHandleFunction) jamexLib.resolve("jpc_get_handle");
     jpc_open_func = (JpcOpenFunction) jamexLib.resolve("jpc_open");
+    jpc_close_func = (JpcCloseFunction) jamexLib.resolve("jpc_close");
     jpc_open_port_func = (JpcOpenPortFunction) jamexLib.resolve("jpc_open_port");
     jpc_get_error_func = (JpcGetErrorFunction) jamexLib.resolve("jpc_get_error");
     jpc_read_value_func = (JpcReadValueFunction) jamexLib.resolve("jpc_read_value");
@@ -31,37 +40,79 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
     } else {
         qDebug() << "Failed to load Jamex library!";
     }
+}
 
-    if (jpc_get_handle_func) {
-        jpcHandle = jpc_get_handle_func();
-        qDebug() << "HANDLE: " << jpcHandle;
+BackEnd::~BackEnd() {
+    qDebug() << "BackEnd::~BackEnd()";
+    jamexDisconnect();
+}
 
-        bool is_open = false;
+void BackEnd::jamexConnect() {
+    qDebug() << "JAMEX IS CONNECTED: " << jamexIsConnected;
+    if ( ! jamexIsConnected ) {
+        qDebug() << "I MADE IT IN";
+        if (jpc_get_handle_func) {
+            jpcHandle = jpc_get_handle_func();
+            qDebug() << "HANDLE: " << jpcHandle;
 
-        if (jpcHandle) {
-            is_open = jpc_open_func(jpcHandle);
-            qDebug() << "RESULT OF jpc_open: " << is_open;
+            bool is_open = false;
 
-            if (!is_open) {
-            int error;
-            error = jpc_get_error_func(jpcHandle);
-            qDebug() << "ERRROR CODE: " << error;
+            if (jpcHandle) {
+                is_open = jpc_open_func(jpcHandle);
+                qDebug() << "RESULT OF jpc_open: " << is_open;
+
+                if (is_open) {
+                    jamexIsConnected = true;
+                } else {
+                    int error;
+                    error = jpc_get_error_func(jpcHandle);
+                    qDebug() << "ERRROR CODE: " << error;
+
+                    jamexIsConnected = false;
+                }
+
+                //TODO: Add some kind of popup if there is an error connecting?
+
+                //double val = jpc_read_value_func( jpcHandle );
+                //qDebug() << "VAL: " << val;
+
+                //QTimer *timer = new QTimer(this);
+                //connect(timer, SIGNAL(timeout()), this, SLOT(fetchJamexBalance()));
+                //timer->start(500);
             }
-            //TODO: Add some kind of popup if there is an error connecting
-
-            double val = jpc_read_value_func( jpcHandle );
-            qDebug() << "VAL: " << val;
-
-            QTimer *timer = new QTimer(this);
-            connect(timer, SIGNAL(timeout()), this, SLOT(fetchJamexBalance()));
-            timer->start(500);
         }
     }
 }
 
+void BackEnd::jamexDisconnect() {
+    jpc_close_func(jpcHandle);
+    jamexIsConnected = false;
+}
+
+// This method fetches the balance from the machine and updates the amount we have stored internally
 void BackEnd::fetchJamexBalance() {
-    qDebug() << "BackEnd::fetchJamexBalance";
-    jamexBalance = jpc_read_value_func( jpcHandle );
+    jamexConnect();
+
+    double newBalance = jpc_read_value_func( jpcHandle );
+    if ( newBalance != m_jamexBalance ) {
+        m_jamexBalance = newBalance;
+        emit jamexBalanceChanged();
+        qDebug() << "BackEnd::fetchJamexBalance: BALANCE CHANGED";
+    }
+
+    //jamexDisconnect();
+}
+
+// This method just returns the amount we have stored internally
+QString BackEnd::jamexBalance() {
+    jamexConnect();
+
+    m_jamexBalance = jpc_read_value_func( jpcHandle );
+    qDebug() << "JAMEX BALANCE: " << QString::number(m_jamexBalance);
+
+    //jamexDisconnect();
+
+    return QString::number(m_jamexBalance);
 }
 
 QString BackEnd::serverAddress() {

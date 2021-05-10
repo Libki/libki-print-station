@@ -11,8 +11,7 @@ Component {
         title: qsTr("Libki Jamex Payment Processor")
         width: 800
         height: 800
-        visible: true
-        modality: Qt.ApplicationModal
+        visible: false
 
         onVisibilityChanged: function(){
             console.log("USERNAME: " + backend.userName);
@@ -20,6 +19,19 @@ Component {
 
         BackEnd {
             id: backend
+        }
+
+        Timer {
+            interval: 1000; running: true; repeat: true
+            onTriggered: updateJamexBalanceAmount()
+        }
+        function updateJamexBalanceAmount() {
+            var jbalance = backend.jamexBalance;
+            if ( jamexBalanceAmount.text != jbalance) {
+                console.log("JAMEX BALANCE CHANGED!");
+                jamexBalanceAmount.text = jbalance;
+                console.log("JAMEX BALANCE: " + jbalance );
+            }
         }
 
         GridLayout {
@@ -38,7 +50,8 @@ Component {
             }
 
             Text {
-                text: qsTr("0.00")
+                id: jamexBalanceAmount
+                text: backend.jamexBalance
             }
 
             Label {

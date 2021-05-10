@@ -11,8 +11,13 @@ Window {
     width: 1024
     height: 768
     visible: true
-    visibility: "Maximized"
+    //visibility: "Maximized"
     title: qsTr("Libki Jamex Payment Processor")
+    property var pWindow
+    Component.onCompleted: function() {
+        pWindow = paymentWindow.createObject(mainWindow);
+        conn.target = pWindow;
+    }
 
     MessageDialog {
         id: messageDialog
@@ -124,9 +129,9 @@ Window {
                                 var d = eval('new Object(' + o.responseText + ')');
 
                                 if ( d.success ) {
-                                    var window = paymentWindow.createObject(mainWindow);
                                     mainWindow.hide();
-                                    conn.target = window;
+                                    pWindow.visible = true;
+                                    pWindow.show();
                                 } else {
                                     if ( d.error == "SIP_ACS_OFFLINE" ) {
                                         messageDialog.text = qsTr("Unable to authenticate. ILS is offline for SIP.");
@@ -159,14 +164,16 @@ Window {
         Connections {
             id: conn
             onVisibleChanged: {
-                textFieldUsername.text = ""
-                textFieldPassword.text = ""
-                backend.userName = ""
-                backend.userPassword = ""
+                if ( ! pWindow.visible ) {
+                    textFieldUsername.text = ""
+                    textFieldPassword.text = ""
+                    backend.userName = ""
+                    backend.userPassword = ""
 
-                mainWindow.show();
-                mainWindow.visibility = 'Maximized';
-                textFieldUsername.focus = true
+                    mainWindow.show();
+                    //mainWindow.visibility = 'Maximized';
+                    textFieldUsername.focus = true
+                }
             }
         }
     }

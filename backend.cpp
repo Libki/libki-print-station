@@ -2,6 +2,7 @@
 
 #include <QLibrary>
 #include <QSettings>
+#include <QTimer>
 
 typedef void * ( * JpcGetHandleFunction)();
 typedef bool( * JpcOpenFunction)(void * );
@@ -19,11 +20,11 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
     }
 
     QLibrary jamexLib("JPClibs");
-    JpcGetHandleFunction jpc_get_handle_func = (JpcGetHandleFunction) jamexLib.resolve("jpc_get_handle");
-    JpcOpenFunction jpc_open_func = (JpcOpenFunction) jamexLib.resolve("jpc_open");
-    JpcOpenPortFunction jpc_open_port_func = (JpcOpenPortFunction) jamexLib.resolve("jpc_open_port");
-    JpcGetErrorFunction jpc_get_error_func = (JpcGetErrorFunction) jamexLib.resolve("jpc_get_error");
-    JpcReadValueFunction jpc_read_value_func = (JpcReadValueFunction) jamexLib.resolve("jpc_read_value");
+    jpc_get_handle_func = (JpcGetHandleFunction) jamexLib.resolve("jpc_get_handle");
+    jpc_open_func = (JpcOpenFunction) jamexLib.resolve("jpc_open");
+    jpc_open_port_func = (JpcOpenPortFunction) jamexLib.resolve("jpc_open_port");
+    jpc_get_error_func = (JpcGetErrorFunction) jamexLib.resolve("jpc_get_error");
+    jpc_read_value_func = (JpcReadValueFunction) jamexLib.resolve("jpc_read_value");
 
     if (jamexLib.load()) {
         qDebug() << "Jamex library loaded!";
@@ -31,28 +32,36 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
         qDebug() << "Failed to load Jamex library!";
     }
 
-    void * handle;
     if (jpc_get_handle_func) {
-        handle = jpc_get_handle_func();
-        qDebug() << "HANDLE: " << handle;
+        jpcHandle = jpc_get_handle_func();
+        qDebug() << "HANDLE: " << jpcHandle;
 
         bool is_open = false;
 
-        if (handle) {
-            is_open = jpc_open_func(handle);
+        if (jpcHandle) {
+            is_open = jpc_open_func(jpcHandle);
             qDebug() << "RESULT OF jpc_open: " << is_open;
 
             if (!is_open) {
             int error;
-            error = jpc_get_error_func(handle);
+            error = jpc_get_error_func(jpcHandle);
             qDebug() << "ERRROR CODE: " << error;
             }
             //TODO: Add some kind of popup if there is an error connecting
 
-            double val = jpc_read_value_func( handle );
+            double val = jpc_read_value_func( jpcHandle );
             qDebug() << "VAL: " << val;
+
+            QTimer *timer = new QTimer(this);
+            connect(timer, SIGNAL(timeout()), this, SLOT(fetchJamexBalance()));
+            timer->start(500);
         }
     }
+}
+
+void BackEnd::fetchJamexBalance() {
+    qDebug() << "BackEnd::fetchJamexBalance";
+    jamexBalance = jpc_read_value_func( jpcHandle );
 }
 
 QString BackEnd::serverAddress() {

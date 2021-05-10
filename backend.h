@@ -8,6 +8,12 @@
 
 #include <qqml.h>
 
+typedef void * ( * JpcGetHandleFunction)();
+typedef bool( * JpcOpenFunction)(void * );
+typedef bool( * JpcOpenPortFunction)(void * , char * );
+typedef int( * JpcGetErrorFunction)(void * );
+typedef double( * JpcReadValueFunction)(void * );
+
 class BackEnd : public QObject
 {
     Q_OBJECT
@@ -19,6 +25,14 @@ class BackEnd : public QObject
 
 public:
     explicit BackEnd(QObject *parent = nullptr);
+
+    JpcGetHandleFunction jpc_get_handle_func;
+    JpcOpenFunction jpc_open_func;
+    JpcOpenPortFunction jpc_open_port_func;
+    JpcGetErrorFunction jpc_get_error_func;
+    JpcReadValueFunction jpc_read_value_func;
+
+    void * jpcHandle;
 
     QSettings settings;
 
@@ -39,6 +53,10 @@ signals:
 private:
     QString m_userName;
     QString m_userPassword;
+    double jamexBalance;
+
+private slots:
+    void fetchJamexBalance();
 };
 
 #endif // BACKEND_H

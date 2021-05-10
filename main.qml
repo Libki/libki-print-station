@@ -159,8 +159,14 @@ Window {
         Connections {
             id: conn
             onVisibleChanged: {
+                textFieldUsername.text = ""
+                textFieldPassword.text = ""
+                backend.userName = ""
+                backend.userPassword = ""
+
                 mainWindow.show();
                 mainWindow.visibility = 'Maximized';
+                textFieldUsername.focus = true
             }
         }
     }

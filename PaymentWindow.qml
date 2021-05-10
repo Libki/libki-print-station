@@ -29,7 +29,8 @@ Component {
             var jbalance = backend.jamexBalance;
             if ( jamexBalanceAmount.text != jbalance) {
                 console.log("JAMEX BALANCE CHANGED!");
-                jamexBalanceAmount.text = jbalance;
+                jamexBalanceAmount.text = jbalance.toFixed(2);
+                spinbox.to = jbalance * 100;
                 console.log("JAMEX BALANCE: " + jbalance );
             }
         }
@@ -51,7 +52,7 @@ Component {
 
             Text {
                 id: jamexBalanceAmount
-                text: backend.jamexBalance
+                text: parseFloat(backend.jamexBalance).toFixed(2)
             }
 
             Label {
@@ -59,20 +60,47 @@ Component {
                 text: qsTr("Amount to tranfer:")
             }
 
-            TextField {
-                id: textFieldAmountToTransfer
-                focus: true
-                placeholderText: qsTr("0.00")
-                Keys.onReturnPressed: function() {
-                    console.log("ENTER WAS PRESSED")
+            SpinBox {
+                id: spinbox
+                from: 0
+                value: 0
+                to: backend.jamexBalance * 100
+                stepSize: 1
+                editable: true
+
+                property int decimals: 2
+
+                validator: DoubleValidator {
+                    bottom: Math.min(spinbox.from, spinbox.to)
+                    top:  Math.max(spinbox.from, spinbox.to)
+                }
+
+                textFromValue: function(value, locale) {
+                    return Number(value / 100).toLocaleString(locale, 'f', spinbox.decimals)
+                }
+
+                valueFromText: function(text, locale) {
+                    return Number.fromLocaleString(locale, text) * 100
+                }
+
+                onValueModified: {
+                    var jamexBalance = jamexBalanceAmount.text;
+                    console.log("JAMX BAL: " + jamexBalance);
+                    var balanceForLibki = spinbox.value / 100;
+                    console.log("FOR LIBKI: " + balanceForLibki );
+                    var remainder = jamexBalance - balanceForLibki;
+                    console.log("REMAIN: " + remainder );
+                    balanceToReturn.text = remainder.toFixed(2);
                 }
             }
+
 
             Text {
                 text: qsTr("Balance to return")
             }
 
             Text {
+                id: balanceToReturn
                 text: qsTr("0.00")
             }
 

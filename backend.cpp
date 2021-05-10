@@ -42,11 +42,6 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
     }
 }
 
-BackEnd::~BackEnd() {
-    qDebug() << "BackEnd::~BackEnd()";
-    jamexDisconnect();
-}
-
 void BackEnd::jamexConnect() {
     qDebug() << "JAMEX IS CONNECTED: " << jamexIsConnected;
     if ( ! jamexIsConnected ) {

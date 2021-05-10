@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.1
 
 import io.qt.libki_jamex.backend 1.0
 
@@ -13,12 +14,20 @@ Window {
     visibility: "Maximized"
     title: qsTr("Libki Jamex Payment Processor")
 
+    MessageDialog {
+        id: messageDialog
+        title: qsTr("Unable to log in")
+        text: ""
+        icon: StandardIcon.Warning
+        modality: Qt.WindowModal
+    }
+
     BackEnd {
         id: backend
     }
 
     PaymentWindow {
-        id:  popupWindow
+        id:  paymentWindow
     }
 
     Row {
@@ -71,6 +80,10 @@ Window {
                         focus: true
                         placeholderText: qsTr("Enter username")
                         onEditingFinished: backend.userName = text
+                        Keys.onReturnPressed: function() {
+                            backend.userName = text
+                            textFieldPassword.focus = true
+                        }
                     }
 
                     Label {
@@ -83,6 +96,10 @@ Window {
                         echoMode: TextInput.Password
                         placeholderText: qsTr("Enter password")
                         onEditingFinished: backend.userPassword = text
+                        Keys.onReturnPressed: function() {
+                            backend.userPassword = text
+                            login.clicked()
+                        }
                     }
 
                     Text{}
@@ -101,19 +118,38 @@ Window {
                             var url = server_address + path + api_key + "?username=" + username + "&password=" + password;
                             console.log("AUTHENTICATION URL: " + url)
                             request(url, function (o) {
-                                //TODO: HANDLE BAD LOGINS/BAD API KEYS
-                                //TODO: HANDLE LOGIN SUCCESS
-
                                 // log the json response
                                 console.log(o.responseText);
-
                                 // translate response into object
                                 var d = eval('new Object(' + o.responseText + ')');
-                            })
 
-                            //var window = popupWindow.createObject(mainWindow);
-                            //mainWindow.hide();
-                            //conn.target = window;
+                                if ( d.success ) {
+                                    var window = paymentWindow.createObject(mainWindow);
+                                    mainWindow.hide();
+                                    conn.target = window;
+                                } else {
+                                    if ( d.error == "SIP_ACS_OFFLINE" ) {
+                                        messageDialog.text = qsTr("Unable to authenticate. ILS is offline for SIP.");
+                                    } else if ( d.error == "SIP_AUTH_FAILURE" ) {
+                                        messageDialog.text = qsTr("Unable to authenticate. ILS login for SIP failed.");
+                                    } else if ( d.error == "FEE_LIMIT" ) {
+                                        messageDialog.text("Unable to log in, you own too many fees.");
+                                    } else if ( d.error == "INVALID_USER" || d.error == "INVALID_PASSWORD" || d.error == "BAD_LOGIN"){
+                                        messageDialog.text = qsTr("Username & password do not match.");
+                                    } else {
+                                        messageDialog.text = qsTr("Unable to authenticate. Error code: " ) + d.error;
+                                    }
+
+                                    textFieldUsername.text = ""
+                                    textFieldPassword.text = ""
+                                    backend.userName = ""
+                                    backend.userPassword = ""
+
+                                    messageDialog.visible = true
+
+                                    textFieldUsername.focus = true
+                                }
+                            })
                         }
                     }
                 }

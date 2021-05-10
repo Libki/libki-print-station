@@ -1,9 +1,10 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 
-#include <QObject>
-#include <QString>
 #include <QLibrary>
+#include <QObject>
+#include <QSettings>
+#include <QString>
 
 #include <qqml.h>
 
@@ -18,6 +19,8 @@ class BackEnd : public QObject
 
 public:
     explicit BackEnd(QObject *parent = nullptr);
+
+    QSettings settings;
 
     QString userName();
     void setUserName(const QString &userName);

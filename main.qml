@@ -1,8 +1,8 @@
 import QtQuick 2.12
-import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.1
+import QtQuick.Layouts 1.12
+import QtQuick.Window 2.12
 
 import "functions.js" as Functions
 
@@ -121,8 +121,8 @@ Window {
                             var password = backend.userPassword
                             var api_key = backend.serverApiKey
                             var server_address = backend.serverAddress
-                            var path = '/api/public/authenticate/'
-                            var url = server_address + path + api_key + "?username=" + username + "&password=" + password;
+                            var path = '/api/public/authenticate_user/'
+                            var url = server_address + path + "?api_key=" + api_key + "&username=" + username + "&password=" + password;
                             console.log("AUTHENTICATION URL: " + url)
                             Functions.request(url, function (o) {
                                 // log the json response
@@ -139,6 +139,8 @@ Window {
                                         messageDialog.text = qsTr("Unable to authenticate. ILS is offline for SIP.");
                                     } else if ( d.error == "SIP_AUTH_FAILURE" ) {
                                         messageDialog.text = qsTr("Unable to authenticate. ILS login for SIP failed.");
+                                    } else if ( d.error == "INVALID_API_KEY" ) {
+                                        messageDialog.text = qsTr("Unable to authenticate. API key is invalid.");
                                     } else if ( d.error == "FEE_LIMIT" ) {
                                         messageDialog.text("Unable to log in, you own too many fees.");
                                     } else if ( d.error == "INVALID_USER" || d.error == "INVALID_PASSWORD" || d.error == "BAD_LOGIN"){

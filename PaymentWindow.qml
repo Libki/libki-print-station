@@ -1,24 +1,30 @@
 import QtQuick 2.12
-import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
+import QtQuick.Dialogs 1.1
 import QtQuick.Layouts 1.12
+import QtQuick.Window 2.12
+
+import "functions.js" as Functions
 
 import io.qt.libki_jamex.backend 1.0
 
 Component {
-    id:  paymentWindow
     Window {
+        id:  paymentWindow
         title: qsTr("Libki Jamex Payment Processor")
         width: 800
         height: 800
         visible: false
 
-        onVisibilityChanged: function(){
-            console.log("USERNAME: " + backend.userName);
-        }
-
         BackEnd {
             id: backend
+        }
+
+        MessageDialog {
+            id: paymentDialog
+            title: qsTr("Payment confirmed")
+            text: ""
+            modality: Qt.WindowModal
         }
 
         Timer {
@@ -87,11 +93,8 @@ Component {
 
                 onValueModified: {
                     var jamexBalance = jamexBalanceAmount.text;
-                    console.log("JAMX BAL: " + jamexBalance);
                     var balanceForLibki = spinbox.value / 100;
-                    console.log("FOR LIBKI: " + balanceForLibki );
                     var remainder = jamexBalance - balanceForLibki;
-                    console.log("REMAIN: " + remainder );
                     balanceToReturn.text = remainder.toFixed(2);
                 }
             }
@@ -103,7 +106,7 @@ Component {
 
             Text {
                 id: balanceToReturn
-                text: qsTr("0.00")
+                text: "0.00"
             }
 
             Text{}
@@ -113,44 +116,35 @@ Component {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: {
                     var username = backend.userName
+                    var funds = spinbox.value / 100;
                     var api_key = backend.serverApiKey
                     var server_address = backend.serverAddress
-                    var path = '/api/public/authenticate/'
-                    var url = server_address + path + api_key + "?username=" + username + "&password=" + password;
-                    console.log("AUTHENTICATION URL: " + url)
-                    request(url, function (o) {
-                        // log the json response
-                        console.log(o.responseText);
-                        // translate response into object
+                    var path = '/api/public/user_funds/'
+                    var url = server_address + path + "?api_key=" + api_key + "&username=" + username + "&funds=" + funds;
+                    Functions.request(url, function (o) {
+                        // translate response into an object
                         var d = eval('new Object(' + o.responseText + ')');
 
                         if ( d.success ) {
-                            var window = paymentWindow.createObject(mainWindow);
-                            mainWindow.hide();
-                            conn.target = window;
+                            var funds = d.balance;
+                            paymentDialog.text = qsTr("Funds have been transferred!");
+                            paymentDialog.visible = true;
                         } else {
-                            if ( d.error == "SIP_ACS_OFFLINE" ) {
-                                messageDialog.text = qsTr("Unable to authenticate. ILS is offline for SIP.");
-                            } else if ( d.error == "SIP_AUTH_FAILURE" ) {
-                                messageDialog.text = qsTr("Unable to authenticate. ILS login for SIP failed.");
-                            } else if ( d.error == "FEE_LIMIT" ) {
-                                messageDialog.text("Unable to log in, you own too many fees.");
-                            } else if ( d.error == "INVALID_USER" || d.error == "INVALID_PASSWORD" || d.error == "BAD_LOGIN"){
-                                messageDialog.text = qsTr("Username & password do not match.");
+                            if ( d.error == "INVALID_API_KEY" ) {
+                               mssageDialog.text = qsTr("Unable to authenticate. API key is invalid.");
+                            } else if ( d.error == "INVALID_USER" ) {
+                                messageDialog.text(qsTr("Unable to find user."));
                             } else {
-                                messageDialog.text = qsTr("Unable to authenticate. Error code: " ) + d.error;
+                                messageDialog.text = qsTr("Unable to add funds. Error code: " ) + d.error;
                             }
 
-                            textFieldUsername.text = ""
-                            textFieldPassword.text = ""
-                            backend.userName = ""
-                            backend.userPassword = ""
-
                             messageDialog.visible = true
-
-                            textFieldUsername.focus = true
                         }
-                    })
+
+                        backend.userName = "";
+                        backend.userPassword = "";
+                        paymentWindow.hide();
+                    }, 'POST');
                 }
             }
         }

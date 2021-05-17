@@ -115,12 +115,20 @@ Component {
                 text: qsTr("Transfer funds")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 onClicked: {
-                    var username = backend.userName
+                    var username = backend.userName;
                     var funds = spinbox.value / 100;
-                    var api_key = backend.serverApiKey
-                    var server_address = backend.serverAddress
-                    var path = '/api/public/user_funds/'
+                    var api_key = backend.serverApiKey;
+                    var server_address = backend.serverAddress;
+                    var path = '/api/public/user_funds/';
                     var url = server_address + path + "?api_key=" + api_key + "&username=" + username + "&funds=" + funds;
+
+                    backend.jamexDeductAmount = funds;
+                    var success = backend.jamexDeductAmount;
+                    if ( success == "false" ) { // Must pass string, not bool
+                        MessageDialog.text = qsTr("Unable to deduct amount from Jamex machine. Please ask staff for help");
+                        MessageDialog.visible = true;
+                    }
+
                     Functions.request(url, function (o) {
                         // translate response into an object
                         var d = eval('new Object(' + o.responseText + ')');
@@ -138,7 +146,7 @@ Component {
                                 messageDialog.text = qsTr("Unable to add funds. Error code: " ) + d.error;
                             }
 
-                            messageDialog.visible = true
+                            messageDialog.visible = true;
                         }
 
                         backend.userName = "";

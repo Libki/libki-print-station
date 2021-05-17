@@ -116,8 +116,18 @@ QString BackEnd::jamexBalance() {
     return QString::number(m_jamexBalance);
 }
 
-bool BackEnd::jamexDeductValue( const double & value ) {
+void BackEnd::jamexDeductValue( const QString & value ) {
+    qDebug() << "BackEnd::jamexDeductValue(" << value;
 
+    jamexDeductValueSucceeded = false;
+
+    double amount = value.toDouble();
+
+    jamexDeductValueSucceeded = jpc_deduct_value_func( jpcHandle, amount );
+}
+
+QString BackEnd::jamexDeductValueSuccess() {
+    return jamexDeductValueSucceeded ? "true" : "false";
 }
 
 QString BackEnd::serverAddress() {

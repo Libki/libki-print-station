@@ -26,6 +26,7 @@ class BackEnd : public QObject
     Q_PROPERTY(QString serverAddress READ serverAddress)
     Q_PROPERTY(QString serverApiKey READ serverApiKey)
     Q_PROPERTY(QString jamexBalance READ jamexBalance NOTIFY jamexBalanceChanged)
+    Q_PROPERTY(QString jamexDeductAmount READ jamexDeductValueSuccess WRITE jamexDeductValue)
     QML_ELEMENT
 
 public:
@@ -43,7 +44,8 @@ public:
 
     QString jamexBalance();
 
-    bool jamexDeductValue(const double &value);
+    void jamexDeductValue(const QString &value);
+    QString jamexDeductValueSuccess();
 
 signals:
     void userNameChanged();
@@ -56,6 +58,8 @@ private:
     double m_jamexBalance;
 
     bool jamexIsConnected;
+
+    bool jamexDeductValueSucceeded;
 
     void * jpcHandle;
 

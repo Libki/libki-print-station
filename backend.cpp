@@ -6,11 +6,14 @@
 #include <QTimer>
 
 typedef void * ( * JpcGetHandleFunction)();
-typedef bool( * JpcOpenFunction)(void * );
-typedef bool( * JpcCloseFunction)(void * );
-typedef bool( * JpcOpenPortFunction)(void * , char * );
-typedef int( * JpcGetErrorFunction)(void * );
-typedef double( * JpcReadValueFunction)(void * );
+typedef bool   ( * JpcOpenFunction)        (void * );
+typedef bool   ( * JpcCloseFunction)       (void * );
+typedef bool   ( * JpcOpenPortFunction)    (void * , char *);
+typedef bool   ( * JpcDeductValueFunction) (void *, const double);
+typedef bool   ( * JpcReturnValueFunction) (void *);
+typedef void   ( * JpcSetOptionsFunction)  (void*, const bool, const bool, const bool, const bool);
+typedef int    ( * JpcGetErrorFunction)    (void * );
+typedef double ( * JpcReadValueFunction)   (void * );
 
 BackEnd::BackEnd(QObject * parent): QObject(parent) {
     qDebug() << "Backend::Backend()";
@@ -34,6 +37,9 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
     jpc_open_port_func = (JpcOpenPortFunction) jamexLib.resolve("jpc_open_port");
     jpc_get_error_func = (JpcGetErrorFunction) jamexLib.resolve("jpc_get_error");
     jpc_read_value_func = (JpcReadValueFunction) jamexLib.resolve("jpc_read_value");
+    jpc_deduct_value_func = (JpcDeductValueFunction) jamexLib.resolve("jpc_deduct_value");
+    jpc_return_value_func = (JpcReturnValueFunction) jamexLib.resolve("jpc_return_value");
+    jpc_set_options_func = (JpcSetOptionsFunction) jamexLib.resolve("jpc_set_options");
 
     if (jamexLib.load()) {
         qDebug() << "Jamex library loaded!";
@@ -108,6 +114,10 @@ QString BackEnd::jamexBalance() {
     //jamexDisconnect();
 
     return QString::number(m_jamexBalance);
+}
+
+bool BackEnd::jamexDeductValue( const double & value ) {
+
 }
 
 QString BackEnd::serverAddress() {

@@ -9,11 +9,14 @@
 #include <qqml.h>
 
 typedef void * ( * JpcGetHandleFunction)();
-typedef bool( * JpcOpenFunction)(void * );
-typedef bool( * JpcCloseFunction)(void * );
-typedef bool( * JpcOpenPortFunction)(void * , char * );
-typedef int( * JpcGetErrorFunction)(void * );
-typedef double( * JpcReadValueFunction)(void * );
+typedef bool   ( * JpcOpenFunction)        (void * );
+typedef bool   ( * JpcCloseFunction)       (void * );
+typedef bool   ( * JpcOpenPortFunction)    (void * , char *);
+typedef bool   ( * JpcDeductValueFunction) (void *, const double);
+typedef bool   ( * JpcReturnValueFunction) (void *);
+typedef void   ( * JpcSetOptionsFunction)  (void*, const bool, const bool, const bool, const bool);
+typedef int    ( * JpcGetErrorFunction)    (void * );
+typedef double ( * JpcReadValueFunction)   (void * );
 
 class BackEnd : public QObject
 {
@@ -40,6 +43,8 @@ public:
 
     QString jamexBalance();
 
+    bool jamexDeductValue(const double &value);
+
 signals:
     void userNameChanged();
     void userPasswordChanged();
@@ -65,6 +70,9 @@ private:
     JpcOpenPortFunction jpc_open_port_func;
     JpcGetErrorFunction jpc_get_error_func;
     JpcReadValueFunction jpc_read_value_func;
+    JpcDeductValueFunction jpc_deduct_value_func;
+    JpcReturnValueFunction jpc_return_value_func;
+    JpcSetOptionsFunction jpc_set_options_func;
 
 private slots:
     void fetchJamexBalance();

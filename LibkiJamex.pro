@@ -36,5 +36,4 @@ HEADERS += \
 
 INCLUDEPATH += 3rdparty/JPClibs/include
 
-DISTFILES += \
-    methods.js
+DISTFILES +=

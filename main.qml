@@ -4,6 +4,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.1
 
+import "functions.js" as Functions
+
 import io.qt.libki_jamex.backend 1.0
 
 Window {
@@ -114,7 +116,7 @@ Window {
                         text: qsTr("Log in")
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         enabled: textFieldUsername.length && textFieldPassword.length
-                        onClicked: {
+                        onClicked: function() {
                             var username = backend.userName
                             var password = backend.userPassword
                             var api_key = backend.serverApiKey
@@ -122,7 +124,7 @@ Window {
                             var path = '/api/public/authenticate/'
                             var url = server_address + path + api_key + "?username=" + username + "&password=" + password;
                             console.log("AUTHENTICATION URL: " + url)
-                            request(url, function (o) {
+                            Functions.request(url, function (o) {
                                 // log the json response
                                 console.log(o.responseText);
                                 // translate response into object
@@ -176,16 +178,5 @@ Window {
                 }
             }
         }
-    }
-
-    function request(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = (function(myxhr) {
-            return function() {
-                if ( myxhr.readyState === 4 ) callback(myxhr)
-            }
-        })(xhr);
-        xhr.open('GET', url, true);
-        xhr.send('');
     }
 }

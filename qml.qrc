@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>libki.png</file>
         <file>PaymentWindow.qml</file>
+        <file>functions.js</file>
     </qresource>
 </RCC>

@@ -165,7 +165,7 @@ Window {
 
         Connections {
             id: conn
-            onVisibleChanged: {
+            function onVisibleChanged() {
                 if ( ! pWindow.visible ) {
                     textFieldUsername.text = ""
                     textFieldPassword.text = ""

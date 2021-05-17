@@ -22,7 +22,7 @@ class BackEnd : public QObject
     Q_PROPERTY(QString userPassword READ userPassword WRITE setUserPassword NOTIFY userPasswordChanged)
     Q_PROPERTY(QString serverAddress READ serverAddress)
     Q_PROPERTY(QString serverApiKey READ serverApiKey)
-    Q_PROPERTY(QString jamexBalance READ jamexBalance)
+    Q_PROPERTY(QString jamexBalance READ jamexBalance NOTIFY jamexBalanceChanged)
     QML_ELEMENT
 
 public:

@@ -26,12 +26,14 @@ Component {
             onTriggered: updateJamexBalanceAmount()
         }
         function updateJamexBalanceAmount() {
-            var jbalance = backend.jamexBalance;
+            var jbalance = parseFloat(backend.jamexBalance).toFixed(2);
             if ( jamexBalanceAmount.text != jbalance) {
-                console.log("JAMEX BALANCE CHANGED!");
-                jamexBalanceAmount.text = jbalance.toFixed(2);
+                jamexBalanceAmount.text = jbalance;
                 spinbox.to = jbalance * 100;
-                console.log("JAMEX BALANCE: " + jbalance );
+
+                var balanceForLibki = spinbox.value / 100;
+                var remainder = jbalance - balanceForLibki;
+                balanceToReturn.text = remainder.toFixed(2);
             }
         }
 

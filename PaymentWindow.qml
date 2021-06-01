@@ -16,6 +16,14 @@ Component {
         height: 800
         visible: false
 
+        onVisibilityChanged: function() {
+            var success = backend.jamexEnableChangeCardReturn;
+
+            if ( ! this.visible ) {
+                success = backend.jamexReturnBalance;
+            }
+        }
+
         BackEnd {
             id: backend
         }
@@ -74,7 +82,7 @@ Component {
                 value: 0
                 to: backend.jamexBalance * 100
                 stepSize: 1
-                editable: true
+                editable: parseFloat(jamexBalanceAmount.text) > 0
 
                 property int decimals: 2
 
@@ -114,6 +122,7 @@ Component {
             Button {
                 text: qsTr("Transfer funds")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                enabled: spinbox.value > 0
                 onClicked: {
                     var username = backend.userName;
                     var funds = spinbox.value / 100;
@@ -122,12 +131,13 @@ Component {
                     var path = '/api/public/user_funds/';
                     var url = server_address + path + "?api_key=" + api_key + "&username=" + username + "&funds=" + funds;
 
-                    backend.jamexDisableChangeCardReturn;
-
+                    //backend.jamexDisableChangeCardReturn;
 
                     Functions.request(url, function (o) {
                         // translate response into an object
                         var d = eval('new Object(' + o.responseText + ')');
+
+                        var success;
 
                         if ( d.success ) {
                             var funds = d.balance;
@@ -135,14 +145,11 @@ Component {
                             paymentDialog.visible = true;
 
                             backend.jamexDeductAmount = funds;
-                            var success = backend.jamexDeductAmount;
+                            success = backend.jamexDeductAmount;
                             if ( success === "false" ) { // Must pass string, not bool
                                 MessageDialog.text = qsTr("Unable to deduct amount from Jamex machine. Please ask staff for help");
                                 MessageDialog.visible = true;
                             }
-
-                            success = backend.jamexReturnBalance;
-                            success = backend.jamexDisableChangeCardReturn;
                         } else {
                             if ( d.error === "INVALID_API_KEY" ) {
                                mssageDialog.text = qsTr("Unable to authenticate. API key is invalid.");
@@ -155,8 +162,12 @@ Component {
                             messageDialog.visible = true;
                         }
 
+                        success = backend.jamexReturnBalance;
+                        success = backend.jamexEnableChangeCardReturn;
+
                         backend.userName = "";
                         backend.userPassword = "";
+
                         paymentWindow.hide();
                     }, 'POST');
                 }

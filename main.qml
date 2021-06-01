@@ -135,15 +135,15 @@ Window {
                                     pWindow.visible = true;
                                     pWindow.show();
                                 } else {
-                                    if ( d.error == "SIP_ACS_OFFLINE" ) {
+                                    if ( d.error === "SIP_ACS_OFFLINE" ) {
                                         messageDialog.text = qsTr("Unable to authenticate. ILS is offline for SIP.");
-                                    } else if ( d.error == "SIP_AUTH_FAILURE" ) {
+                                    } else if ( d.error === "SIP_AUTH_FAILURE" ) {
                                         messageDialog.text = qsTr("Unable to authenticate. ILS login for SIP failed.");
-                                    } else if ( d.error == "INVALID_API_KEY" ) {
+                                    } else if ( d.error === "INVALID_API_KEY" ) {
                                         messageDialog.text = qsTr("Unable to authenticate. API key is invalid.");
-                                    } else if ( d.error == "FEE_LIMIT" ) {
+                                    } else if ( d.error === "FEE_LIMIT" ) {
                                         messageDialog.text("Unable to log in, you own too many fees.");
-                                    } else if ( d.error == "INVALID_USER" || d.error == "INVALID_PASSWORD" || d.error == "BAD_LOGIN"){
+                                    } else if ( d.error === "INVALID_USER" || d.error == "INVALID_PASSWORD" || d.error == "BAD_LOGIN"){
                                         messageDialog.text = qsTr("Username & password do not match.");
                                     } else {
                                         messageDialog.text = qsTr("Unable to authenticate. Error code: " ) + d.error;

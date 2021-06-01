@@ -73,13 +73,6 @@ void BackEnd::jamexConnect() {
                 }
 
                 //TODO: Add some kind of popup if there is an error connecting?
-
-                //double val = jpc_read_value_func( jpcHandle );
-                //qDebug() << "VAL: " << val;
-
-                //QTimer *timer = new QTimer(this);
-                //connect(timer, SIGNAL(timeout()), this, SLOT(fetchJamexBalance()));
-                //timer->start(500);
             }
         }
     }
@@ -100,8 +93,6 @@ void BackEnd::fetchJamexBalance() {
         emit jamexBalanceChanged();
         qDebug() << "BackEnd::fetchJamexBalance: BALANCE CHANGED";
     }
-
-    //jamexDisconnect();
 }
 
 // This method just returns the amount we have stored internally
@@ -110,8 +101,6 @@ QString BackEnd::jamexBalance() {
 
     m_jamexBalance = jpc_read_value_func( jpcHandle );
     qDebug() << "JAMEX BALANCE: " << QString::number(m_jamexBalance);
-
-    //jamexDisconnect();
 
     return QString::number(m_jamexBalance);
 }
@@ -140,6 +129,21 @@ QString BackEnd::serverApiKey() {
     QString libkiServerApiKey = settings.value("server/api_key").toString();
     qDebug() << "LIBKI SERVER API KEY: " << libkiServerApiKey;
     return libkiServerApiKey;
+}
+
+bool BackEnd::jamexReturnBalance() {
+    jpc_return_value_func( jpcHandle );
+    return true;
+}
+
+bool BackEnd::jamexEnableChangeCardReturn() {
+    jpc_set_options_func(jpcHandle, true, true, true, true);
+    return true;
+}
+
+bool BackEnd::jamexDisableChangeCardReturn() {
+    jpc_set_options_func(jpcHandle, false, true, true, true);
+    return true;
 }
 
 QString BackEnd::userName() {

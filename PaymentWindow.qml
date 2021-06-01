@@ -122,12 +122,8 @@ Component {
                     var path = '/api/public/user_funds/';
                     var url = server_address + path + "?api_key=" + api_key + "&username=" + username + "&funds=" + funds;
 
-                    backend.jamexDeductAmount = funds;
-                    var success = backend.jamexDeductAmount;
-                    if ( success == "false" ) { // Must pass string, not bool
-                        MessageDialog.text = qsTr("Unable to deduct amount from Jamex machine. Please ask staff for help");
-                        MessageDialog.visible = true;
-                    }
+                    backend.jamexDisableChangeCardReturn;
+
 
                     Functions.request(url, function (o) {
                         // translate response into an object
@@ -137,10 +133,20 @@ Component {
                             var funds = d.balance;
                             paymentDialog.text = qsTr("Funds have been transferred!");
                             paymentDialog.visible = true;
+
+                            backend.jamexDeductAmount = funds;
+                            var success = backend.jamexDeductAmount;
+                            if ( success === "false" ) { // Must pass string, not bool
+                                MessageDialog.text = qsTr("Unable to deduct amount from Jamex machine. Please ask staff for help");
+                                MessageDialog.visible = true;
+                            }
+
+                            success = backend.jamexReturnBalance;
+                            success = backend.jamexDisableChangeCardReturn;
                         } else {
-                            if ( d.error == "INVALID_API_KEY" ) {
+                            if ( d.error === "INVALID_API_KEY" ) {
                                mssageDialog.text = qsTr("Unable to authenticate. API key is invalid.");
-                            } else if ( d.error == "INVALID_USER" ) {
+                            } else if ( d.error === "INVALID_USER" ) {
                                 messageDialog.text(qsTr("Unable to find user."));
                             } else {
                                 messageDialog.text = qsTr("Unable to add funds. Error code: " ) + d.error;

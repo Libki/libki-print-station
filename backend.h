@@ -27,6 +27,9 @@ class BackEnd : public QObject
     Q_PROPERTY(QString serverApiKey READ serverApiKey)
     Q_PROPERTY(QString jamexBalance READ jamexBalance NOTIFY jamexBalanceChanged)
     Q_PROPERTY(QString jamexDeductAmount READ jamexDeductValueSuccess WRITE jamexDeductValue)
+    Q_PROPERTY(bool jamexReturnBalance READ jamexReturnBalance)
+    Q_PROPERTY(bool jamexEnableChangeCardReturn READ jamexEnableChangeCardReturn)
+    Q_PROPERTY(bool jamexDisableChangeCardReturn READ jamexDisableChangeCardReturn)
     QML_ELEMENT
 
 public:
@@ -43,6 +46,11 @@ public:
     QString serverApiKey();
 
     QString jamexBalance();
+
+    bool jamexReturnBalance();
+
+    bool jamexEnableChangeCardReturn();
+    bool jamexDisableChangeCardReturn();
 
     void jamexDeductValue(const QString &value);
     QString jamexDeductValueSuccess();

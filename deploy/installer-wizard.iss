@@ -16,6 +16,15 @@ AllowNoIcons=yes
 [Files]
 Source: "windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
+[Dirs]
+Name: {app}\logs
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[Icons]
+Name: "{userdesktop}\Libki Jamex client"; Filename: "{app}\LibkiJamex.exe"; Tasks: desktopicon
+
 [CustomMessages]
 NameAndVersion=%1 version %2
 AdditionalIcons=Additional icons:
@@ -28,8 +37,8 @@ AssocFileExtension=&Associate %1 with the %2 file extension
 AssocingFileExtension=Associating %1 with the %2 file extension...
 
 [INI]
-Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "server"; Key: "address"; String: "{code:GetAddress}"
-Filename: "{commonappdata}\Libki\Libki Kiosk Management System.ini"; Section: "server"; Key: "api_key"; String: "{code:GetApiKey}"
+Filename: "{commonappdata}\Libki\Libki Jamex Payment Processor.ini"; Section: "server"; Key: "address"; String: "{code:GetAddress}"
+Filename: "{commonappdata}\Libki\Libki Jamex Payment Processor.ini"; Section: "server"; Key: "api_key"; String: "{code:GetApiKey}"
 
 [Code]
 var

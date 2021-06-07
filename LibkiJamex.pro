@@ -12,6 +12,7 @@ QML_IMPORT_MAJOR_VERSION = 1
 
 SOURCES += \
         backend.cpp \
+        logutils.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -32,7 +33,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     backend.h \
-    jamex/JPClibs.h
+    jamex/JPClibs.h \
+    logutils.h
 
 INCLUDEPATH += 3rdparty/JPClibs/include
 

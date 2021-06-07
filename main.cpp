@@ -1,3 +1,5 @@
+#include "logutils.h"
+
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QSettings>
@@ -9,6 +11,9 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
+
+    LogUtils::initLogging();
+
     QCoreApplication::setOrganizationName("Libki");
     QCoreApplication::setOrganizationDomain("libki.org");
     QCoreApplication::setApplicationName("Libki Jamex Payment Processor");

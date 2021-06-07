@@ -9,7 +9,7 @@ AppSupportURL=http://libki.org/
 AppUpdatesURL=http://libki.org/
 DefaultDirName={pf}\LibkiJamex
 DefaultGroupName=Libki Jamex Client
-OutputBaseFilename=Libki_Client_Installer
+OutputBaseFilename=Libki_Jamex_Installer
 Compression=lzma
 AllowNoIcons=yes
 

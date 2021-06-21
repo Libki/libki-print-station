@@ -1,12 +1,13 @@
 
 #include "logutils.h"
 
-#include <QTime>
-#include <QFile>
-#include <QFileInfo>
 #include <QDebug>
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QFileInfoList>
+#include <QTime>
+
 #include <iostream>
 
 namespace LogUtils
@@ -44,10 +45,13 @@ namespace LogUtils
 
   bool initLogging()
   {
+      qDebug() << "LOG DIRECTORY: " << logFolderName;
+
       // Create folder for logfiles if not exists
       if(!QDir(logFolderName).exists())
       {
-        QDir().mkdir(logFolderName);
+        bool success = QDir().mkdir(logFolderName);
+        qDebug() << "Result of mkdir on " << logFolderName << " = " << success;
       }
 
       deleteOldLogs(); //delete old log files
@@ -106,6 +110,6 @@ namespace LogUtils
     QFile outFile(logFileName);
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream ts(&outFile);
-    ts << text << endl;
+    ts << text << Qt::endl;
   }
 }

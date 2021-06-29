@@ -106,7 +106,7 @@ QString BackEnd::jamexBalance() {
 }
 
 void BackEnd::jamexDeductValue( const QString & value ) {
-    qDebug() << "BackEnd::jamexDeductValue(" << value;
+    qDebug() << "BackEnd::jamexDeductValue(" << value << ")";
 
     jamexDeductValueSucceeded = false;
 

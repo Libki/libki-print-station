@@ -17,8 +17,11 @@ Component {
         visible: false
 
         onVisibilityChanged: function() {
+            // Change / card return should always been enabled when this window is shown or hidden
             var success = backend.jamexEnableChangeCardReturn;
 
+            // If this window is hidden, we are back at the login screen and should attempt to return
+            // the change or balance in case the user 
             if ( ! this.visible ) {
                 success = backend.jamexReturnBalance;
             }
@@ -140,11 +143,14 @@ Component {
                         var success;
 
                         if ( d.success ) {
-                            var funds = d.balance;
+                            var balanceForLibki = spinbox.value / 100;
+                            var amount_to_deduct = balanceForLibki.toFixed(2);
+
                             paymentDialog.text = qsTr("Funds have been transferred!");
                             paymentDialog.visible = true;
 
-                            backend.jamexDeductAmount = funds;
+                            console.log("AMOUNT TO DEDUCT: " + amount_to_deduct);
+                            backend.jamexDeductAmount = amount_to_deduct;
                             success = backend.jamexDeductAmount;
                             if ( success === "false" ) { // Must pass string, not bool
                                 MessageDialog.text = qsTr("Unable to deduct amount from Jamex machine. Please ask staff for help");

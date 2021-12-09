@@ -18,7 +18,7 @@ typedef double ( * JpcReadValueFunction)   (void * );
 BackEnd::BackEnd(QObject * parent): QObject(parent) {
     qDebug() << "Backend::Backend()";
 
-    settings.setIniCodec("UTF-8");
+//  settings.setIniCodec("UTF-8");
 
     m_jamexBalance = 0.00;
 

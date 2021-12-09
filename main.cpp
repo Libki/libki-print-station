@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings settings;
-    settings.setIniCodec("UTF-8");
+//  settings.setIniCodec("UTF-8");
 
     QQmlApplicationEngine engine("qrc:/main.qml");
     return app.exec();

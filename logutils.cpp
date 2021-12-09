@@ -7,7 +7,6 @@
 #include <QFileInfoList>
 #include <QStandardPaths>
 #include <QTime>
-#include <iostream>
 
 namespace LogUtils {
 static QString logFileName;
@@ -108,10 +107,11 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext& context,
                      .arg(QDateTime::currentDateTime().toString(Qt::ISODate));
 
   // Output to console
-  QTextStream(stdout) << text << endl;
+  QTextStream(stdout) << text << "\n";
 
   // Output to log file
   QTextStream ts(logFile);
-  ts << text << endl;
+  ts << text << "\n";
 }
+
 }  // namespace LogUtils

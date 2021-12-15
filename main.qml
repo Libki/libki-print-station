@@ -5,6 +5,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Dialogs
 import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
+import Qt.labs.qmlmodels 1.0
 
 import "functions.js" as Functions
 
@@ -35,8 +36,41 @@ Window {
         id: backend
     }
 
-    PaymentWindow {
-        id:  paymentWindow
+    Row {
+        id: actionsScreen
+        visible: false
+
+        ColumnLayout {
+            id: actionsLayout
+            anchors.fill: parent
+            spacing: 6
+
+            PaymentWindow {
+              id:  paymentWindow
+            }
+
+            Rectangle {
+                color: 'teal'
+                Layout.minimumWidth: 440
+                Layout.minimumHeight: 400
+                Layout.preferredWidth: parent.width
+                PrintRelease {
+                    id: printRelease
+                }
+            }
+
+            Rectangle {
+                color: 'plum'
+                Layout.fillWidth: true
+                Layout.minimumWidth: 100
+                Layout.preferredWidth: 200
+                Layout.preferredHeight: 100
+                Text {
+                    anchors.centerIn: parent
+                    text: parent.width + 'x' + parent.height
+                }
+            }
+        }
     }
 
     Row {
@@ -71,11 +105,18 @@ Window {
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
+                Text {
+                    anchors.top: libkiLogo.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    id: descriptionText
+                    text: qsTr("Printing Center")
+                }
+
                 GridLayout {
                     id: usernamePasswordGrid
                     rows: 3
                     columns: 2
-                    anchors.top: libkiLogo.bottom
+                    anchors.top: descriptionText.bottom
                     anchors.topMargin: 10
                     anchors.horizontalCenter: parent.horizontalCenter
 
@@ -133,9 +174,8 @@ Window {
                                 var d = eval('new Object(' + o.responseText + ')');
 
                                 if ( d.success ) {
-                                    mainWindow.hide();
-                                    pWindow.visible = true;
-                                    pWindow.show();
+                                    loginScreen.visible = false;
+                                    actionsScreen.visible = true;
                                 } else {
                                     if ( d.error === "SIP_ACS_OFFLINE" ) {
                                         messageDialog.text = qsTr("Unable to authenticate. ILS is offline for SIP.");
@@ -163,22 +203,6 @@ Window {
                             })
                         }
                     }
-                }
-            }
-        }
-
-        Connections {
-            id: conn
-            function onVisibleChanged() {
-                if ( ! pWindow.visible ) {
-                    textFieldUsername.text = ""
-                    textFieldPassword.text = ""
-                    backend.userName = ""
-                    backend.userPassword = ""
-
-                    mainWindow.show();
-                    //mainWindow.visibility = 'Maximized';
-                    textFieldUsername.focus = true
                 }
             }
         }

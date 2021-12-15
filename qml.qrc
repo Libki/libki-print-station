@@ -4,5 +4,6 @@
         <file>libki.png</file>
         <file>PaymentWindow.qml</file>
         <file>functions.js</file>
+        <file>PrintRelease.qml</file>
     </qresource>
 </RCC>

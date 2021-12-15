@@ -10,24 +10,19 @@ import "functions.js" as Functions
 
 import io.qt.libki_jamex.backend 1.0
 
-Component {
-    Window {
+    RowLayout {
         id:  paymentWindow
-        title: qsTr("Libki Jamex Payment Processor")
-        width: 800
-        height: 800
-        visible: false
 
-        onVisibilityChanged: function() {
-            // Change / card return should always been enabled when this window is shown or hidden
-            var success = backend.jamexEnableChangeCardReturn;
-
-            // If this window is hidden, we are back at the login screen and should attempt to return
-            // the change or balance in case the user 
-            if ( ! this.visible ) {
-                success = backend.jamexReturnBalance;
-            }
-        }
+//        onVisibilityChanged: function() {
+//            // Change / card return should always been enabled when this window is shown or hidden
+//           var success = backend.jamexEnableChangeCardReturn;
+//
+//            // If this window is hidden, we are back at the login screen and should attempt to return
+//            // the change or balance in case the user
+//            if ( ! this.visible ) {
+//                success = backend.jamexReturnBalance;
+//            }
+//        }
 
         BackEnd {
             id: backend
@@ -60,12 +55,6 @@ Component {
             id: transferFundsGrid
             rows: 4
             columns: 2
-            anchors.top: libkiLogo.bottom
-            anchors.horizontalCenterOffset: 0
-            anchors.verticalCenterOffset: 0
-            anchors.topMargin: 10
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
 
             Text {
                 text: qsTr("Machine balance")
@@ -183,6 +172,5 @@ Component {
         }
 
     }
-}
 
 

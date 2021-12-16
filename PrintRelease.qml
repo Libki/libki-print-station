@@ -17,7 +17,7 @@ TableView {
     }
 
     delegate: DelegateChooser {
-        DelegateChoice {
+        DelegateChoice { // First row is always the header, labels only
             row: 0
             delegate: Label {
                 text: model.display
@@ -25,17 +25,23 @@ TableView {
             }
         }
         DelegateChoice {
-            column: 0
-            delegate: CheckBox {
-                checked: model.display
-                onToggled: model.display = checked
+            column: 3
+            delegate: Button {
+                text: "Preview"
+                property var printFileId: model.display;
+                onClicked: {
+                    console.log("PREVIEW: " + printFileId)
+                }
             }
         }
         DelegateChoice {
-            column: 1
-            delegate: SpinBox {
-                value: model.display
-                onValueModified: model.display = value
+            column: 4
+            delegate: Button {
+                text: "Print"
+                property var printJobId: model.display
+                onClicked: {
+                    console.log("PRINT: " + printJobId)
+                }
             }
         }
         DelegateChoice {
@@ -65,20 +71,6 @@ TableView {
             display: "print_job_id"
         }
 
-        signal load(string username, string password, string apiKey)
-        onLoad: function (username, password, apiKey) {
-            console.log("USERNAME: " + username)
-            console.log("PASSWORD: " + password)
-            console.log("API: " + apiKey)
-            model.appendRow({
-                                "copies": 1,
-                                "print_file_id": 25,
-                                "pages": 1,
-                                "print_job_id": 34,
-                                "created_on": "2021-11-17T13:06:17"
-                            })
-        }
-
         property var headerRow: {
             "copies": qsTr("Copies"),
             "print_file_id": qsTr("Preview"),
@@ -87,43 +79,27 @@ TableView {
             "created_on": qsTr("Created on")
         }
 
-        // Each row is one type of fruit that can be ordered
-        rows: [headerRow, {
-                "copies": 1,
-                "print_file_id": 25,
-                "pages": 1,
-                "print_job_id": 34,
-                "created_on": "2021-11-17T13:06:17"
-            }, {
-                "pages": 1,
-                "print_job_id": 33,
-                "created_on": "2021-11-17T13:06:12",
-                "copies": 1,
-                "print_file_id": 24
-            }, {
-                "pages": 1,
-                "print_job_id": 32,
-                "created_on": "2021-11-17T12:46:35",
-                "print_file_id": 23,
-                "copies": 1
-            }, {
-                "pages": 1,
-                "print_job_id": 31,
-                "created_on": "2021-11-17T11:53:26",
-                "print_file_id": 22,
-                "copies": 1
-            }, {
-                "print_file_id": 21,
-                "copies": 1,
-                "pages": 1,
-                "print_job_id": 30,
-                "created_on": "2021-11-17T11:52:23"
-            }, {
-                "created_on": "2021-11-17T11:41:57",
-                "pages": 1,
-                "print_job_id": 29,
-                "copies": 1,
-                "print_file_id": 20
-            }]
+
+        signal load(string username, string password, string apiKey)
+        onLoad: function (username, password, apiKey) {
+            console.log("USERNAME: " + username)
+            console.log("PASSWORD: " + password)
+            console.log("API: " + apiKey)
+            var xhr = new XMLHttpRequest;
+            xhr.open("GET", "http://192.168.1.20:3000/api/jamex/v1_0/print_jobs?api_key=c050506f-08cc-4e2d-86a0-21df3fe4548f&username=kyle&password=bil..392");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    var data = JSON.parse(xhr.responseText);
+                    console.log(data);
+                    model.clear();
+                    printJobsModel.appendRow( headerRow );
+                    for (var i in data) {
+                        console.log(data[i]);
+                        printJobsModel.appendRow(data[i]);
+                    }
+                }
+            }
+            xhr.send();
+        }
     }
 }

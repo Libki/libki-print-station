@@ -7,9 +7,9 @@ TableView {
     id: printJobsTable
 
     anchors.fill: parent
-    columnSpacing: 1
-    rowSpacing: 1
-    boundsBehavior: Flickable.StopAtBounds
+    topMargin: 10
+    columnSpacing: 10
+    rowSpacing: 10
 
     signal load(string username, string password, string apiKey)
     onLoad: function (username, password, apiKey) {
@@ -17,6 +17,13 @@ TableView {
     }
 
     delegate: DelegateChooser {
+        DelegateChoice {
+            row: 0
+            delegate: Label {
+                text: model.display
+                width: 200
+            }
+        }
         DelegateChoice {
             column: 0
             delegate: CheckBox {
@@ -38,6 +45,7 @@ TableView {
             }
         }
     }
+
 
     model: TableModel {
         id: printJobsModel
@@ -64,16 +72,25 @@ TableView {
             console.log("PASSWORD: " + password)
             console.log("API: " + apiKey)
             model.appendRow({
-                                "copies": 1,
-                                "print_file_id": 25,
-                                "pages": 1,
-                                "print_job_id": 34,
-                                "created_on": "2021-11-17T13:06:17"
+                "copies": 1,
+                "print_file_id": 25,
+                "pages": 1,
+                "print_job_id": 34,
+                "created_on": "2021-11-17T13:06:17"
                             })
         }
 
+        property var headerRow: {
+            "copies": "Copies",
+            "print_file_id": "Preview",
+            "pages": "Pages",
+            "print_job_id": "Release",
+            "created_on": "Created on"
+        }
+
         // Each row is one type of fruit that can be ordered
-        rows: [{
+        rows: [
+            headerRow, {
                 "copies": 1,
                 "print_file_id": 25,
                 "pages": 1,

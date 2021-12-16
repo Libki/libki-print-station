@@ -46,7 +46,6 @@ TableView {
         }
     }
 
-
     model: TableModel {
         id: printJobsModel
 
@@ -72,25 +71,24 @@ TableView {
             console.log("PASSWORD: " + password)
             console.log("API: " + apiKey)
             model.appendRow({
-                "copies": 1,
-                "print_file_id": 25,
-                "pages": 1,
-                "print_job_id": 34,
-                "created_on": "2021-11-17T13:06:17"
+                                "copies": 1,
+                                "print_file_id": 25,
+                                "pages": 1,
+                                "print_job_id": 34,
+                                "created_on": "2021-11-17T13:06:17"
                             })
         }
 
         property var headerRow: {
-            "copies": "Copies",
-            "print_file_id": "Preview",
-            "pages": "Pages",
-            "print_job_id": "Release",
-            "created_on": "Created on"
+            "copies": qsTr("Copies"),
+            "print_file_id": qsTr("Preview"),
+            "pages": qsTr("Pages"),
+            "print_job_id": qsTr("Release"),
+            "created_on": qsTr("Created on")
         }
 
         // Each row is one type of fruit that can be ordered
-        rows: [
-            headerRow, {
+        rows: [headerRow, {
                 "copies": 1,
                 "print_file_id": 25,
                 "pages": 1,

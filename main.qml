@@ -40,13 +40,20 @@ Window {
             anchors.fill: parent
             spacing: 6
 
-            PaymentWindow {
-                id: paymentWindow
+            GroupBox {
+                implicitWidth: mainWindow.width
+                title: qsTr("Add printing funds via Jamex")
+
+                PaymentWindow {
+                    id: paymentWindow
+                }
             }
 
-            Rectangle {
-                color: 'teal'
-                Layout.minimumWidth: 440
+            GroupBox {
+                implicitWidth: mainWindow.width
+                title: qsTr("Release print jobs to printer")
+
+                Layout.minimumWidth: mainWindow.width
                 Layout.minimumHeight: 400
                 Layout.preferredWidth: parent.width
                 PrintRelease {
@@ -54,15 +61,22 @@ Window {
                 }
             }
 
-            Rectangle {
-                color: 'plum'
-                Layout.fillWidth: true
-                Layout.minimumWidth: 100
-                Layout.preferredWidth: 200
-                Layout.preferredHeight: 100
-                Text {
-                    anchors.centerIn: parent
-                    text: parent.width + 'x' + parent.height
+            GroupBox {
+                implicitWidth: mainWindow.width
+
+                Button {
+                    text: qsTr("Log out")
+                    onClicked: function () {
+                        backend.userName = ""
+                        backend.userPassword = ""
+
+                        loginScreen.visible = true
+                        actionsScreen.visible = false
+
+                        textFieldUsername.clear();
+                        textFieldPassword.clear();
+                        textFieldUsername.focus = true
+                    }
                 }
             }
         }
@@ -173,9 +187,8 @@ Window {
                                 if (d.success) {
                                     loginScreen.visible = false
                                     actionsScreen.visible = true
-                                    console.log("API KEY: XXXXXXXXXXXXXXXXXXXXXXXXXX: " + api_key)
                                     printRelease.load(username,
-                                                      password, api_key);
+                                                      password, api_key)
                                 } else {
                                     if (d.error === "SIP_ACS_OFFLINE") {
                                         messageDialog.text = qsTr(

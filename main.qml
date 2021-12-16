@@ -73,8 +73,8 @@ Window {
                         loginScreen.visible = true
                         actionsScreen.visible = false
 
-                        textFieldUsername.clear();
-                        textFieldPassword.clear();
+                        textFieldUsername.clear()
+                        textFieldPassword.clear()
                         textFieldUsername.focus = true
                     }
                 }
@@ -187,8 +187,8 @@ Window {
                                 if (d.success) {
                                     loginScreen.visible = false
                                     actionsScreen.visible = true
-                                    printRelease.load(username,
-                                                      password, api_key)
+                                    printRelease.load(username, password,
+                                                      api_key, server_address);
                                 } else {
                                     if (d.error === "SIP_ACS_OFFLINE") {
                                         messageDialog.text = qsTr(

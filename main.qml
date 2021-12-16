@@ -18,11 +18,6 @@ Window {
     visible: true
     //visibility: "Maximized"
     title: qsTr("Libki Jamex Payment Processor")
-    property var pWindow
-    Component.onCompleted: function() {
-        pWindow = paymentWindow.createObject(mainWindow);
-        conn.target = pWindow;
-    }
 
     MessageDialog {
         id: messageDialog
@@ -46,7 +41,7 @@ Window {
             spacing: 6
 
             PaymentWindow {
-              id:  paymentWindow
+                id: paymentWindow
             }
 
             Rectangle {
@@ -130,7 +125,7 @@ Window {
                         focus: true
                         placeholderText: qsTr("Enter username")
                         onEditingFinished: backend.userName = text
-                        Keys.onReturnPressed: function() {
+                        Keys.onReturnPressed: function () {
                             backend.userName = text
                             textFieldPassword.focus = true
                         }
@@ -146,49 +141,63 @@ Window {
                         echoMode: TextInput.Password
                         placeholderText: qsTr("Enter password")
                         onEditingFinished: backend.userPassword = text
-                        Keys.onReturnPressed: function() {
+                        Keys.onReturnPressed: function () {
                             backend.userPassword = text
                             login.clicked()
                         }
                     }
 
-                    Text{}
+                    Text {}
 
                     Button {
                         id: login
                         text: qsTr("Log in")
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        enabled: textFieldUsername.length && textFieldPassword.length
-                        onClicked: function() {
+                        enabled: textFieldUsername.length
+                                 && textFieldPassword.length
+                        onClicked: function () {
                             var username = backend.userName
                             var password = backend.userPassword
                             var api_key = backend.serverApiKey
                             var server_address = backend.serverAddress
                             var path = '/api/public/authenticate_user/'
-                            var url = server_address + path + "?api_key=" + api_key + "&username=" + username + "&password=" + password;
+                            var url = server_address + path + "?api_key=" + api_key
+                                    + "&username=" + username + "&password=" + password
                             console.log("AUTHENTICATION URL: " + url)
                             Functions.request(url, function (o) {
                                 // log the json response
-                                console.log(o.responseText);
+                                console.log(o.responseText)
                                 // translate response into object
-                                var d = eval('new Object(' + o.responseText + ')');
+                                var d = eval('new Object(' + o.responseText + ')')
 
-                                if ( d.success ) {
-                                    loginScreen.visible = false;
-                                    actionsScreen.visible = true;
+                                if (d.success) {
+                                    loginScreen.visible = false
+                                    actionsScreen.visible = true
+                                    console.log("API KEY: XXXXXXXXXXXXXXXXXXXXXXXXXX: " + api_key)
+                                    printRelease.load(username,
+                                                      password, api_key);
                                 } else {
-                                    if ( d.error === "SIP_ACS_OFFLINE" ) {
-                                        messageDialog.text = qsTr("Unable to authenticate. ILS is offline for SIP.");
-                                    } else if ( d.error === "SIP_AUTH_FAILURE" ) {
-                                        messageDialog.text = qsTr("Unable to authenticate. ILS login for SIP failed.");
-                                    } else if ( d.error === "INVALID_API_KEY" ) {
-                                        messageDialog.text = qsTr("Unable to authenticate. API key is invalid.");
-                                    } else if ( d.error === "FEE_LIMIT" ) {
-                                        messageDialog.text("Unable to log in, you own too many fees.");
-                                    } else if ( d.error === "INVALID_USER" || d.error == "INVALID_PASSWORD" || d.error == "BAD_LOGIN"){
-                                        messageDialog.text = qsTr("Username & password do not match.");
+                                    if (d.error === "SIP_ACS_OFFLINE") {
+                                        messageDialog.text = qsTr(
+                                                    "Unable to authenticate. ILS is offline for SIP.")
+                                    } else if (d.error === "SIP_AUTH_FAILURE") {
+                                        messageDialog.text = qsTr(
+                                                    "Unable to authenticate. ILS login for SIP failed.")
+                                    } else if (d.error === "INVALID_API_KEY") {
+                                        messageDialog.text = qsTr(
+                                                    "Unable to authenticate. API key is invalid.")
+                                    } else if (d.error === "FEE_LIMIT") {
+                                        messageDialog.text(
+                                                    "Unable to log in, you own too many fees.")
+                                    } else if (d.error === "INVALID_USER"
+                                               || d.error == "INVALID_PASSWORD"
+                                               || d.error == "BAD_LOGIN") {
+                                        messageDialog.text = qsTr(
+                                                    "Username & password do not match.")
                                     } else {
-                                        messageDialog.text = qsTr("Unable to authenticate. Error code: " ) + d.error;
+                                        messageDialog.text = qsTr(
+                                                    "Unable to authenticate. Error code: ")
+                                                + d.error
                                     }
 
                                     textFieldUsername.text = ""
@@ -208,5 +217,3 @@ Window {
         }
     }
 }
-
-

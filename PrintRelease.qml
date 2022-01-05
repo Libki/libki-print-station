@@ -3,6 +3,8 @@ import Qt.labs.qmlmodels 1.0
 import QtQuick.Controls 2.5
 import QtQuick.Controls
 
+import "functions.js" as Functions
+
 TableView {
     id: printJobsTable
 
@@ -14,6 +16,29 @@ TableView {
     signal load(string username, string password, string apiKey, string serverAddress)
     onLoad: function (username, password, apiKey, serverAddress) {
         printJobsModel.load(username, password, apiKey, serverAddress)
+    }
+
+    Dialog {
+        id: dialog
+        title: qsTr("Print preview")
+        modal: true
+        visible: false
+        width: parent.width
+        height: parent.height
+        standardButtons: Dialog.Ok
+        property var dialogPrintJobId
+        contentItem: Item {
+
+            //         Text {
+            //             text: image.status == Image.Ready ? 'Loaded' : 'Not loaded'
+            //         }
+            Image {
+                id: printPreviewImage
+                height: parent.height
+                width: parent.width
+                fillMode: Image.PreserveAspectFit
+            }
+        }
     }
 
     delegate: DelegateChooser {
@@ -29,9 +54,18 @@ TableView {
             column: 3
             delegate: Button {
                 text: "Preview"
-                property var printFileId: model.display
+                property var printJobId: model.display
                 onClicked: {
-                    console.log("PREVIEW: " + printFileId)
+                    console.log("PRINT JOB ID: " + printJobId)
+                    console.log("XXX URL: " + printPreviewImage.source)
+                    dialog.dialogPrintJobId = printJobId
+                    dialog.visible = true
+                    printPreviewImage.source = Functions.build_print_preview_url(
+                                printJobsModel.myServerAddress,
+                                printJobsModel.myApiKey,
+                                printJobsModel.myUsername,
+                                printJobsModel.myPassword,
+                                printJobId)
                 }
             }
         }
@@ -66,7 +100,7 @@ TableView {
             display: "created_on"
         }
         TableModelColumn {
-            display: "print_file_id"
+            display: "print_job_id"
         }
         TableModelColumn {
             display: "print_job_id"
@@ -82,12 +116,22 @@ TableView {
 
         property string urlTemplate: "%1/api/jamex/v1_0/print_jobs?api_key=%2&username=%3&password=%4"
 
+        property string myApiKey: ""
+        property string myServerAddress: ""
+        property string myUsername: ""
+        property string myPassword: ""
+
         signal load(string username, string password, string apiKey, string serverAddress)
         onLoad: function (username, password, apiKey, serverAddress) {
-            console.log("USERNAME: " + username)
-            console.log("PASSWORD: " + password)
-            console.log("API: " + apiKey)
-            console.log("SERVER ADDRESS: " + serverAddress)
+            myUsername = username
+            myPassword = password
+            myApiKey = apiKey
+            myServerAddress = serverAddress
+
+            console.log("USERNAME: " + myUsername)
+            console.log("PASSWORD: " + myPassword)
+            console.log("API: " + myApiKey)
+            console.log("SERVER ADDRESS: " + myServerAddress)
             var xhr = new XMLHttpRequest
             var url = urlTemplate.arg(serverAddress).arg(apiKey).arg(
                         username).arg(password)

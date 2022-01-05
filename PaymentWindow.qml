@@ -67,7 +67,7 @@ RowLayout {
 
         Label {
             id: labelAmountToTransfer
-            text: qsTr("Amount to tranfer:")
+            text: qsTr("Amount to transfer:")
         }
 
         SpinBox {

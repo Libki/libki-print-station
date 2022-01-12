@@ -2,6 +2,7 @@ import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Controls 2.5
 import QtQuick.Controls
+import QtQuick.Layouts 1.12
 
 import "functions.js" as Functions
 
@@ -16,6 +17,24 @@ TableView {
     signal load(string username, string password, string apiKey, string serverAddress)
     onLoad: function (username, password, apiKey, serverAddress) {
         printJobsModel.load(username, password, apiKey, serverAddress)
+    }
+
+    Dialog {
+        id: popupDialog
+        title: qsTr("Job printed")
+        modal: true
+        focus: true
+
+        parent: Overlay.overlay
+
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 3)
+        standardButtons: Dialog.Ok
+
+        Text {
+            id: popupDialogText
+            text: qsTr("Your print job has been submitted.")
+        }
     }
 
     Dialog {
@@ -56,26 +75,57 @@ TableView {
                 text: "Preview"
                 property var printJobId: model.display
                 onClicked: {
-                    console.log("PRINT JOB ID: " + printJobId)
-                    console.log("XXX URL: " + printPreviewImage.source)
                     dialog.dialogPrintJobId = printJobId
                     dialog.visible = true
                     printPreviewImage.source = Functions.build_print_preview_url(
                                 printJobsModel.myServerAddress,
                                 printJobsModel.myApiKey,
                                 printJobsModel.myUsername,
-                                printJobsModel.myPassword,
-                                printJobId)
+                                printJobsModel.myPassword, printJobId)
                 }
             }
         }
         DelegateChoice {
             column: 4
             delegate: Button {
-                text: "Print"
+                text: qsTr("Print")
                 property var printJobId: model.display
                 onClicked: {
-                    console.log("PRINT: " + printJobId)
+                    console.log("PRINT JOB ID: " + printJobId)
+                    const url = Functions.build_print_release_url(
+                                  printJobsModel.myServerAddress,
+                                  printJobsModel.myApiKey,
+                                  printJobsModel.myUsername,
+                                  printJobsModel.myPassword, printJobId)
+                    Functions.request(url, function (o) {
+                        // translate response into an object
+                        var d = eval('new Object(' + o.responseText + ')')
+                        console.log("PRINT JOB RELEASE RESPONSE: " + o.responseText)
+
+                        if (d.success) {
+                            popupDialogText.text = qsTr(
+                                        "Your print job has been submitted.")
+                        } else {
+                            if (d.error === "INVALID_API_KEY") {
+                                popupDialogText.text = qsTr(
+                                            "Unable to authenticate. API key is invalid.")
+                            } else if (d.error === "INVALID_USER") {
+
+                                popupDialogText.text = qsTr(
+                                            "Unable to find user.")
+                            } else {
+
+                                popupDialogText.text = d.error
+                            }
+                        }
+
+                        printJobsModel.load(printJobsModel.myUsername,
+                                            printJobsModel.myPassword,
+                                            printJobsModel.myApiKey,
+                                            printJobsModel.myServerAddress)
+
+                        popupDialog.open()
+                    }, 'POST')
                 }
             }
         }

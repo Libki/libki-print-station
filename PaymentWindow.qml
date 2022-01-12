@@ -146,9 +146,9 @@ RowLayout {
                         success = backend.jamexDeductAmount
                         if (success === "false") {
                             // Must pass string, not bool
-                            MessageDialog.text = qsTr(
+                            paymentDialog.text = qsTr(
                                         "Unable to deduct amount from Jamex machine. Please ask staff for help")
-                            MessageDialog.visible = true
+                            paymentDialog.visible = true
                         }
                     } else {
                         if (d.error === "INVALID_API_KEY") {

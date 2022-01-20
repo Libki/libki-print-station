@@ -1,4 +1,4 @@
-IDI_ICON1               ICON    DISCARDABLE     "libki.ico"
+IDI_ICON1               ICON    DISCARDABLE     "libki_print.ico"
 
 #include <windows.h>
 

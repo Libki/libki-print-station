@@ -21,6 +21,7 @@ TRANSLATIONS += \
     LibkiJamex_en_US.ts
 
 RC_FILE += LibkiJamex.rc
+RC_ICONS = libki_print.ico
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -41,4 +42,4 @@ HEADERS += \
 INCLUDEPATH += 3rdparty/JPClibs/include
 
 DISTFILES += \
-    libki.ico
+    libki_print.ico

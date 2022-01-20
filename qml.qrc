@@ -5,7 +5,5 @@
         <file>PaymentWindow.qml</file>
         <file>functions.js</file>
         <file>PrintRelease.qml</file>
-        <file>icons/sign-in-alt-solid.svg</file>
-        <file>icons/sign-out-alt-solid.svg</file>
     </qresource>
 </RCC>

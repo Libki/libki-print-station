@@ -164,7 +164,7 @@ TableView {
             "created_on": qsTr("Created on")
         }
 
-        property string urlTemplate: "%1/api/jamex/v1_0/print_jobs?api_key=%2&username=%3&password=%4"
+        property string urlTemplate: "%1/api/printstation/v1_0/print_jobs?api_key=%2&username=%3&password=%4"
 
         property string myApiKey: ""
         property string myServerAddress: ""

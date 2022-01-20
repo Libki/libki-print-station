@@ -25,7 +25,7 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
     jamexIsConnected = false;
 
     if (QLibrary::isLibrary("JPClibs.dll")) {
-        qDebug() << "JAMEX LIBRARY FOUND!";
+//      qDebug() << "JAMEX LIBRARY FOUND!";
     } else {
         qDebug() << "JAMEX LIBRARY NOT FOUND!?!";
     }
@@ -42,7 +42,7 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
     jpc_set_options_func = (JpcSetOptionsFunction) jamexLib.resolve("jpc_set_options");
 
     if (jamexLib.load()) {
-        qDebug() << "Jamex library loaded!";
+//      qDebug() << "Jamex library loaded!";
     } else {
         qDebug() << "Failed to load Jamex library!";
     }
@@ -51,7 +51,6 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
 void BackEnd::jamexConnect() {
     qDebug() << "JAMEX IS CONNECTED: " << jamexIsConnected;
     if ( ! jamexIsConnected ) {
-        qDebug() << "I MADE IT IN";
         if (jpc_get_handle_func) {
             jpcHandle = jpc_get_handle_func();
             qDebug() << "HANDLE: " << jpcHandle;

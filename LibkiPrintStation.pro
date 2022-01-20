@@ -18,9 +18,9 @@ SOURCES += \
 RESOURCES += qml.qrc
 
 TRANSLATIONS += \
-    LibkiJamex_en_US.ts
+    LibkiPrintStation_en_US.ts
 
-RC_FILE += LibkiJamex.rc
+RC_FILE += LibkiPrintStation.rc
 RC_ICONS = libki_print.ico
 
 # Additional import path used to resolve QML modules in Qt Creator's code model

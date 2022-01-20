@@ -1,4 +1,4 @@
-﻿#define AppVer GetFileVersion('windows/LibkiJamex.exe')
+﻿#define AppVer GetFileVersion('windows/LibkiPrintStation.exe')
 
 [Setup]
 AppName=Libki Jamex Client
@@ -7,7 +7,7 @@ AppPublisher=Kyle M Hall
 AppPublisherURL=http://kylehall.info/
 AppSupportURL=http://libki.org/
 AppUpdatesURL=http://libki.org/
-DefaultDirName={pf}\LibkiJamex
+DefaultDirName={pf}\LibkiPrintStation
 DefaultGroupName=Libki Jamex Client
 OutputBaseFilename=Libki_Jamex_Installer
 Compression=lzma
@@ -23,7 +23,7 @@ Name: {app}\logs
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Icons]
-Name: "{userdesktop}\Libki Jamex client"; Filename: "{app}\LibkiJamex.exe"; Tasks: desktopicon
+Name: "{userdesktop}\Libki Jamex client"; Filename: "{app}\LibkiPrintStation.exe"; Tasks: desktopicon
 
 [CustomMessages]
 NameAndVersion=%1 version %2

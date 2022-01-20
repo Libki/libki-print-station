@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setOrganizationName("Libki");
     QCoreApplication::setOrganizationDomain("libki.org");
-    QCoreApplication::setApplicationName("Libki Jamex Payment Processor");
+    QCoreApplication::setApplicationName("Libki Print Station");
 
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings settings;

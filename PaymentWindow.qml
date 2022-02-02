@@ -167,9 +167,6 @@ RowLayout {
                     success = backend.jamexReturnBalance
                     success = backend.jamexEnableChangeCardReturn
 
-                    backend.userName = ""
-                    backend.userPassword = ""
-
                     paymentWindow.hide()
                 }, 'POST')
             }

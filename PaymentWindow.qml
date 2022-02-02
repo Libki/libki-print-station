@@ -116,7 +116,6 @@ RowLayout {
         Button {
             text: qsTr("Transfer funds")
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            enabled: spinbox.value > 0
             onClicked: {
                 var username = backend.userName
                 var funds = spinbox.value / 100
@@ -125,6 +124,10 @@ RowLayout {
                 var path = '/api/public/user_funds/'
                 var url = server_address + path + "?api_key=" + api_key
                         + "&username=" + username + "&funds=" + funds
+
+                if ( spinbox.value == 0 ) {
+                    return;
+                }
 
                 //backend.jamexDisableChangeCardReturn;
                 Functions.request(url, function (o) {

@@ -39,6 +39,7 @@ RowLayout {
         repeat: true
         onTriggered: updateJamexBalanceAmount()
     }
+
     function updateJamexBalanceAmount() {
         var jbalance = parseFloat(backend.jamexBalance).toFixed(2)
         if (jamexBalanceAmount.text != jbalance) {
@@ -100,6 +101,13 @@ RowLayout {
                 var remainder = jamexBalance - balanceForLibki
                 balanceToReturn.text = remainder.toFixed(2)
             }
+
+            Label {
+                anchors.left: parent.right
+                anchors.leftMargin: 5
+                text: qsTr("Press return after entering amount.")
+            }
+
         }
 
         Text {

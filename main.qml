@@ -70,6 +70,8 @@ Window {
                         backend.userName = ""
                         backend.userPassword = ""
 
+                        printRelease.unload()
+
                         loginScreen.visible = true
                         actionsScreen.visible = false
 

@@ -19,6 +19,20 @@ TableView {
         printJobsModel.load(username, password, apiKey, serverAddress)
     }
 
+    signal unload
+    onUnload: function () {
+        refreshPrintJobsTimer.running = false
+        printJobsModel.clear()
+    }
+
+    Timer {
+        id: refreshPrintJobsTimer
+        interval: 500
+        running: false
+        repeat: true
+        onTriggered: printJobsModel.refreshPrintJobsTable()
+    }
+
     Dialog {
         id: popupDialog
         title: qsTr("Job printed")
@@ -178,25 +192,42 @@ TableView {
             myApiKey = apiKey
             myServerAddress = serverAddress
 
-            console.log("USERNAME: " + myUsername)
-            console.log("PASSWORD: " + myPassword)
-            console.log("API: " + myApiKey)
-            console.log("SERVER ADDRESS: " + myServerAddress)
+            printJobsModel.setRow(0, headerRow)
+
+            refreshPrintJobsTimer.running = true
+        }
+
+        function refreshPrintJobsTable() {
             var xhr = new XMLHttpRequest
-            var url = urlTemplate.arg(serverAddress).arg(apiKey).arg(
-                        username).arg(password)
+            var url = urlTemplate.arg(myServerAddress).arg(myApiKey).arg(
+                        myUsername).arg(myPassword)
             console.log("URL: " + url)
             xhr.open("GET", url)
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
-                    var data = JSON.parse(xhr.responseText)
-                    console.log(data)
-                    model.clear()
-                    printJobsModel.appendRow(headerRow)
+                    let data = JSON.parse(xhr.responseText)
+                    let j = 1
+
+                    /* Clearing the table and creating all the updated rows at once causes drawing flicker,
+                       to prevent this we update one row at a time and clear any remaining rows */
                     for (var i in data) {
-                        console.log(data[i])
-                        printJobsModel.appendRow(data[i])
+                        let rowData = {
+                            "copies": data[i].copies,
+                            "print_file_id": data[i].print_file_id,
+                            "pages": data[i].pages,
+                            "print_job_id": data[i].print_job_id,
+                            "created_on": data[i].created_on
+                        }
+
+                        if (printJobsModel.getRow(j)) {
+                            printJobsModel.setRow(j, rowData)
+                        } else {
+                            printJobsModel.appendRow(rowData)
+                        }
+                        j++
                     }
+
+                    printJobsModel.removeRow(j, printJobsModel.rowCount - j );
                 }
             }
             xhr.send()

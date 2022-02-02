@@ -76,7 +76,7 @@ RowLayout {
             from: 0
             value: 0
             to: backend.jamexBalance * 100
-            stepSize: 1
+            stepSize: 5
             editable: parseFloat(jamexBalanceAmount.text) > 0
 
             property int decimals: 2

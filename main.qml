@@ -17,7 +17,7 @@ Window {
     height: 768
     visible: true
     //visibility: "Maximized"
-    title: qsTr("Libki Jamex Payment Processor")
+    title: qsTr("Libki Print Station")
 
     MessageDialog {
         id: messageDialog

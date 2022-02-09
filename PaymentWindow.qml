@@ -41,13 +41,13 @@ RowLayout {
     }
     function updateJamexBalanceAmount() {
         var jbalance = parseFloat(backend.jamexBalance).toFixed(2)
-        if (jamexBalanceAmount.text != jbalance) {
-            jamexBalanceAmount.text = jbalance
+        if (jamexBalanceAmount.text.substring(1) != jbalance) {
+            jamexBalanceAmount.text = qsTr("$") + jbalance
             spinbox.to = jbalance * 100
 
             var balanceForLibki = spinbox.value / 100
             var remainder = jbalance - balanceForLibki
-            balanceToReturn.text = remainder.toFixed(2)
+            balanceToReturn.text = qsTr("$") + remainder.toFixed(2)
         }
     }
 
@@ -57,12 +57,12 @@ RowLayout {
         columns: 2
 
         Text {
-            text: qsTr("Machine balance:")
+            text: qsTr("Balance in machine:")
         }
 
         Text {
             id: jamexBalanceAmount
-            text: parseFloat(backend.jamexBalance).toFixed(2)
+            text: qsTr("$") + parseFloat(backend.jamexBalance).toFixed(2)
         }
 
         Label {
@@ -76,7 +76,7 @@ RowLayout {
             value: 0
             to: backend.jamexBalance * 100
             stepSize: 1
-            editable: parseFloat(jamexBalanceAmount.text) > 0
+            editable: backend.JamexBalance > 0
 
             property int decimals: 2
 
@@ -95,10 +95,10 @@ RowLayout {
             }
 
             onValueModified: {
-                var jamexBalance = jamexBalanceAmount.text
+                var jamexBalance = jamexBalanceAmount.text.substring(1)
                 var balanceForLibki = spinbox.value / 100
                 var remainder = jamexBalance - balanceForLibki
-                balanceToReturn.text = remainder.toFixed(2)
+                balanceToReturn.text = qsTr("$") + remainder.toFixed(2)
             }
         }
 
@@ -108,7 +108,7 @@ RowLayout {
 
         Text {
             id: balanceToReturn
-            text: "0.00"
+            text: "$0.00"
         }
 
         Text {}

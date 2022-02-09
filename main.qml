@@ -51,6 +51,29 @@ Window {
 
             GroupBox {
                 implicitWidth: mainWindow.width
+                title: qsTr("Funds available for printing")
+                GridLayout {
+                    rows: 1
+                    columns: 2
+                    anchors.top: parent.top + (parent.top / 4)
+
+                    Text {
+                        id: libkiBalanceLabel
+                        font.pointSize: 18
+                        text: qsTr("Balance in Libki:")
+                    }
+
+                    Text {
+                        id: libkiBalanceAmount
+                        font.pointSize: 18
+                        text: qsTr("$") + parseFloat(
+                                  backend.jamexBalance).toFixed(2)
+                    }
+                }
+            }
+
+            GroupBox {
+                implicitWidth: mainWindow.width
                 title: qsTr("Release print jobs to printer")
 
                 Layout.minimumWidth: mainWindow.width
@@ -190,7 +213,7 @@ Window {
                                     loginScreen.visible = false
                                     actionsScreen.visible = true
                                     printRelease.load(username, password,
-                                                      api_key, server_address);
+                                                      api_key, server_address)
                                 } else {
                                     if (d.error === "SIP_ACS_OFFLINE") {
                                         messageDialog.text = qsTr(

@@ -57,7 +57,7 @@ RowLayout {
         columns: 2
 
         Text {
-            text: qsTr("Machine balance")
+            text: qsTr("Machine balance:")
         }
 
         Text {
@@ -103,7 +103,7 @@ RowLayout {
         }
 
         Text {
-            text: qsTr("Balance to return")
+            text: qsTr("Balance to return:")
         }
 
         Text {

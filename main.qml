@@ -52,23 +52,9 @@ Window {
             GroupBox {
                 implicitWidth: mainWindow.width
                 title: qsTr("Funds available for printing")
-                GridLayout {
-                    rows: 1
-                    columns: 2
-                    anchors.top: parent.top + (parent.top / 4)
 
-                    Text {
-                        id: libkiBalanceLabel
-                        font.pointSize: 18
-                        text: qsTr("Balance in Libki:")
-                    }
-
-                    Text {
-                        id: libkiBalanceAmount
-                        font.pointSize: 18
-                        text: qsTr("$") + parseFloat(
-                                  backend.jamexBalance).toFixed(2)
-                    }
+                LibkiBalance {
+                    id: libkiBalance
                 }
             }
 
@@ -94,6 +80,7 @@ Window {
                         backend.userPassword = ""
 
                         printRelease.unload()
+                        libkiBalance.unload()
 
                         loginScreen.visible = true
                         actionsScreen.visible = false
@@ -213,6 +200,8 @@ Window {
                                     loginScreen.visible = false
                                     actionsScreen.visible = true
                                     printRelease.load(username, password,
+                                                      api_key, server_address)
+                                    libkiBalance.load(username, password,
                                                       api_key, server_address)
                                 } else {
                                     if (d.error === "SIP_ACS_OFFLINE") {

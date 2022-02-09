@@ -219,7 +219,7 @@ TableView {
                             "created_on": data[i].created_on
                         }
 
-                        if (printJobsModel.getRow(j)) {
+                        if (j < printJobsModel.rowcount) {
                             printJobsModel.setRow(j, rowData)
                         } else {
                             printJobsModel.appendRow(rowData)
@@ -227,7 +227,9 @@ TableView {
                         j++
                     }
 
-                    printJobsModel.removeRow(j, printJobsModel.rowCount - j );
+                    if ( printJobsModel.rowCount > j ) {
+                        printJobsModel.removeRow(j, printJobsModel.rowCount - j );
+                    }
                 }
             }
             xhr.send()

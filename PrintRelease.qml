@@ -84,7 +84,7 @@ TableView {
             }
         }
         DelegateChoice {
-            column: 3
+            column: 4
             delegate: Button {
                 text: "Preview"
                 property var printJobId: model.display
@@ -100,12 +100,17 @@ TableView {
             }
         }
         DelegateChoice {
-            column: 4
+            column: 5
             delegate: Button {
                 text: qsTr("Print")
+                enabled: libkiBalance.balance >= printJobsModel.prices[model.display]
                 property var printJobId: model.display
                 onClicked: {
-                    console.log("PRINT JOB ID: " + printJobId)
+                    if (printJobsModel.prices[printJobId] > libkiBalance.balance) {
+                        popupDialogText.text = qsTr("Insufficient funds!")
+                        popupDialog.open()
+                        return
+                    }
                     const url = Functions.build_print_release_url(
                                   printJobsModel.myServerAddress,
                                   printJobsModel.myApiKey,
@@ -124,11 +129,12 @@ TableView {
                                 popupDialogText.text = qsTr(
                                             "Unable to authenticate. API key is invalid.")
                             } else if (d.error === "INVALID_USER") {
-
                                 popupDialogText.text = qsTr(
                                             "Unable to find user.")
+                            } else if (d.error === "INSUFFICIENT_FUNDS") {
+                                popupDialogText.text = qsTr(
+                                            "Insufficient funds.")
                             } else {
-
                                 popupDialogText.text = d.error
                             }
                         }
@@ -164,6 +170,9 @@ TableView {
             display: "created_on"
         }
         TableModelColumn {
+            display: "cost"
+        }
+        TableModelColumn {
             display: "print_job_id"
         }
         TableModelColumn {
@@ -175,8 +184,11 @@ TableView {
             "print_file_id": qsTr("Preview"),
             "pages": qsTr("Pages"),
             "print_job_id": qsTr("Release"),
-            "created_on": qsTr("Created on")
+            "created_on": qsTr("Created on"),
+            "cost": qsTr("Cost")
         }
+
+        property var prices: ({})
 
         property string urlTemplate: "%1/api/printstation/v1_0/print_jobs?api_key=%2&username=%3&password=%4"
 
@@ -208,15 +220,26 @@ TableView {
                     let data = JSON.parse(xhr.responseText)
                     let j = 1
 
+
                     /* Clearing the table and creating all the updated rows at once causes drawing flicker,
                        to prevent this we update one row at a time and clear any remaining rows */
                     for (var i in data) {
+                        const copies = data[i].copies
+                        const cost = data[i].cost
+                        const created_on = data[i].created_on
+                        const pages = data[i].pages
+                        const print_file_id = data[i].print_file_id
+                        const print_job_id = data[i].print_job_id
+
+                        prices[print_job_id] = cost
+
                         let rowData = {
-                            "copies": data[i].copies,
-                            "print_file_id": data[i].print_file_id,
-                            "pages": data[i].pages,
-                            "print_job_id": data[i].print_job_id,
-                            "created_on": data[i].created_on
+                            "copies": copies,
+                            "cost": qsTr("$") + parseFloat(cost).toFixed(2),
+                            "created_on": created_on,
+                            "pages": pages,
+                            "print_file_id": print_file_id,
+                            "print_job_id": print_job_id
                         }
 
                         if (j < printJobsModel.rowcount) {
@@ -227,8 +250,8 @@ TableView {
                         j++
                     }
 
-                    if ( printJobsModel.rowCount > j ) {
-                        printJobsModel.removeRow(j, printJobsModel.rowCount - j );
+                    if (printJobsModel.rowCount > j) {
+                        printJobsModel.removeRow(j, printJobsModel.rowCount - j)
                     }
                 }
             }

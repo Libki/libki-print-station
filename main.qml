@@ -16,7 +16,7 @@ Window {
     width: 1024
     height: 768
     visible: true
-    //visibility: "Maximized"
+    visibility: backend.mainWindowVisibility
     title: qsTr("Libki Print Station")
 
     MessageDialog {

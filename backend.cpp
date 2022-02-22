@@ -130,6 +130,16 @@ QString BackEnd::serverApiKey() {
     return libkiServerApiKey;
 }
 
+QString BackEnd::mainWindowVisibility() {
+    QString libkiMainWindowVisibility = settings.value("client/visibility").toString();
+    qDebug() << "CLIENT MAIN WINDOW VISIBILITY: " << libkiMainWindowVisibility;
+    if ( libkiMainWindowVisibility.length() > 0 ) {
+        return libkiMainWindowVisibility;
+    } else {
+        return "Windowed";
+    }
+}
+
 bool BackEnd::jamexReturnBalance() {
     jpc_return_value_func( jpcHandle );
     return true;

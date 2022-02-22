@@ -25,6 +25,7 @@ class BackEnd : public QObject
     Q_PROPERTY(QString userPassword READ userPassword WRITE setUserPassword NOTIFY userPasswordChanged)
     Q_PROPERTY(QString serverAddress READ serverAddress)
     Q_PROPERTY(QString serverApiKey READ serverApiKey)
+    Q_PROPERTY(QString mainWindowVisibility READ mainWindowVisibility)
     Q_PROPERTY(QString jamexBalance READ jamexBalance NOTIFY jamexBalanceChanged)
     Q_PROPERTY(QString jamexDeductAmount READ jamexDeductValueSuccess WRITE jamexDeductValue)
     Q_PROPERTY(bool jamexReturnBalance READ jamexReturnBalance)
@@ -44,6 +45,8 @@ public:
     QString serverAddress();
 
     QString serverApiKey();
+
+    QString mainWindowVisibility();
 
     QString jamexBalance();
 

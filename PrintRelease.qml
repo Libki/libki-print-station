@@ -6,13 +6,10 @@ import QtQuick.Layouts 1.12
 
 import "functions.js" as Functions
 
-TableView {
+ColumnLayout {
     id: printJobsTable
-
     anchors.fill: parent
-    topMargin: 10
-    columnSpacing: 10
-    rowSpacing: 10
+    spacing: 10
 
     signal load(string username, string password, string apiKey, string serverAddress)
     onLoad: function (username, password, apiKey, serverAddress) {
@@ -25,237 +22,255 @@ TableView {
         printJobsModel.clear()
     }
 
-    Timer {
-        id: refreshPrintJobsTimer
-        interval: 500
-        running: false
-        repeat: true
-        onTriggered: printJobsModel.refreshPrintJobsTable()
+    Text {
+        id: printButtonWarning
+        text: qsTr('If enough funds are available, printing will start immediately when the "print" button is clicked.')
+        anchors.top: parent.top
     }
 
-    Dialog {
-        id: popupDialog
-        title: qsTr("Job printed")
-        modal: true
-        focus: true
+    TableView {
+        id: printJobsTableView
 
-        parent: Overlay.overlay
+        anchors.fill: parent
+        topMargin: 10
+        columnSpacing: 10
+        rowSpacing: 10
+        anchors.top: printButtonWarning.bottom
+        anchors.topMargin: printButtonWarning.height + 5
 
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 3)
-        standardButtons: Dialog.Ok
-
-        Text {
-            id: popupDialogText
-            text: qsTr("Your print job has been submitted.")
+        Timer {
+            id: refreshPrintJobsTimer
+            interval: 500
+            running: false
+            repeat: true
+            onTriggered: printJobsModel.refreshPrintJobsTable()
         }
-    }
 
-    Dialog {
-        id: dialog
-        title: qsTr("Print preview")
-        modal: true
-        visible: false
-        width: parent.width
-        height: parent.height
-        standardButtons: Dialog.Ok
-        property var dialogPrintJobId
-        contentItem: Item {
+        Dialog {
+            id: popupDialog
+            title: qsTr("Job printed")
+            modal: true
+            focus: true
 
-            //         Text {
-            //             text: image.status == Image.Ready ? 'Loaded' : 'Not loaded'
-            //         }
-            Image {
-                id: printPreviewImage
-                height: parent.height
-                width: parent.width
-                fillMode: Image.PreserveAspectFit
+            parent: Overlay.overlay
+
+            x: Math.round((parent.width - width) / 2)
+            y: Math.round((parent.height - height) / 3)
+            standardButtons: Dialog.Ok
+
+            Text {
+                id: popupDialogText
+                text: qsTr("Your print job has been submitted.")
             }
         }
-    }
 
-    delegate: DelegateChooser {
-        DelegateChoice {
-            // First row is always the header, labels only
-            row: 0
-            delegate: Label {
-                text: model.display
-                width: 200
-            }
-        }
-        DelegateChoice {
-            column: 4
-            delegate: Button {
-                text: "Preview"
-                property var printJobId: model.display
-                onClicked: {
-                    dialog.dialogPrintJobId = printJobId
-                    dialog.visible = true
-                    printPreviewImage.source = Functions.build_print_preview_url(
-                                printJobsModel.myServerAddress,
-                                printJobsModel.myApiKey,
-                                printJobsModel.myUsername,
-                                printJobsModel.myPassword, printJobId)
+        Dialog {
+            id: dialog
+            title: qsTr("Print preview")
+            modal: true
+            visible: false
+            width: parent.width
+            height: parent.height
+            standardButtons: Dialog.Ok
+            property var dialogPrintJobId
+            contentItem: Item {
+
+                //         Text {
+                //             text: image.status == Image.Ready ? 'Loaded' : 'Not loaded'
+                //         }
+                Image {
+                    id: printPreviewImage
+                    height: parent.height
+                    width: parent.width
+                    fillMode: Image.PreserveAspectFit
                 }
             }
         }
-        DelegateChoice {
-            column: 5
-            delegate: Button {
-                text: qsTr("Print")
-                enabled: libkiBalance.balance >= printJobsModel.prices[model.display]
-                property var printJobId: model.display
-                onClicked: {
-                    if (printJobsModel.prices[printJobId] > libkiBalance.balance) {
-                        popupDialogText.text = qsTr("Insufficient funds!")
-                        popupDialog.open()
-                        return
-                    }
-                    const url = Functions.build_print_release_url(
-                                  printJobsModel.myServerAddress,
-                                  printJobsModel.myApiKey,
-                                  printJobsModel.myUsername,
-                                  printJobsModel.myPassword, printJobId)
-                    Functions.request(url, function (o) {
-                        // translate response into an object
-                        var d = eval('new Object(' + o.responseText + ')')
-                        console.log("PRINT JOB RELEASE RESPONSE: " + o.responseText)
 
-                        if (d.success) {
-                            popupDialogText.text = qsTr(
-                                        "Your print job has been submitted.")
-                        } else {
-                            if (d.error === "INVALID_API_KEY") {
+        delegate: DelegateChooser {
+            DelegateChoice {
+                // First row is always the header, labels only
+                row: 0
+                delegate: Label {
+                    text: model.display
+                    width: 200
+                }
+            }
+            DelegateChoice {
+                column: 4
+                delegate: Button {
+                    text: "Preview"
+                    property var printJobId: model.display
+                    onClicked: {
+                        dialog.dialogPrintJobId = printJobId
+                        dialog.visible = true
+                        printPreviewImage.source = Functions.build_print_preview_url(
+                                    printJobsModel.myServerAddress,
+                                    printJobsModel.myApiKey,
+                                    printJobsModel.myUsername,
+                                    printJobsModel.myPassword, printJobId)
+                    }
+                }
+            }
+            DelegateChoice {
+                column: 5
+                delegate: Button {
+                    text: qsTr("Print")
+                    enabled: libkiBalance.balance >= printJobsModel.prices[model.display]
+                    property var printJobId: model.display
+                    onClicked: {
+                        if (printJobsModel.prices[printJobId] > libkiBalance.balance) {
+                            popupDialogText.text = qsTr("Insufficient funds!")
+                            popupDialog.open()
+                            return
+                        }
+                        const url = Functions.build_print_release_url(
+                                      printJobsModel.myServerAddress,
+                                      printJobsModel.myApiKey,
+                                      printJobsModel.myUsername,
+                                      printJobsModel.myPassword, printJobId)
+                        Functions.request(url, function (o) {
+                            // translate response into an object
+                            var d = eval('new Object(' + o.responseText + ')')
+                            console.log("PRINT JOB RELEASE RESPONSE: " + o.responseText)
+
+                            if (d.success) {
                                 popupDialogText.text = qsTr(
-                                            "Unable to authenticate. API key is invalid.")
-                            } else if (d.error === "INVALID_USER") {
-                                popupDialogText.text = qsTr(
-                                            "Unable to find user.")
-                            } else if (d.error === "INSUFFICIENT_FUNDS") {
-                                popupDialogText.text = qsTr(
-                                            "Insufficient funds.")
+                                            "Your print job has been submitted.")
                             } else {
-                                popupDialogText.text = d.error
+                                if (d.error === "INVALID_API_KEY") {
+                                    popupDialogText.text = qsTr(
+                                                "Unable to authenticate. API key is invalid.")
+                                } else if (d.error === "INVALID_USER") {
+                                    popupDialogText.text = qsTr(
+                                                "Unable to find user.")
+                                } else if (d.error === "INSUFFICIENT_FUNDS") {
+                                    popupDialogText.text = qsTr(
+                                                "Insufficient funds.")
+                                } else {
+                                    popupDialogText.text = d.error
+                                }
                             }
-                        }
 
-                        printJobsModel.load(printJobsModel.myUsername,
-                                            printJobsModel.myPassword,
-                                            printJobsModel.myApiKey,
-                                            printJobsModel.myServerAddress)
+                            printJobsModel.load(printJobsModel.myUsername,
+                                                printJobsModel.myPassword,
+                                                printJobsModel.myApiKey,
+                                                printJobsModel.myServerAddress)
 
-                        popupDialog.open()
-                    }, 'POST')
+                            popupDialog.open()
+                        }, 'POST')
+                    }
+                }
+            }
+            DelegateChoice {
+                delegate: Label {
+                    text: model.display
+                    width: 200
                 }
             }
         }
-        DelegateChoice {
-            delegate: Label {
-                text: model.display
-                width: 200
+
+        model: TableModel {
+            id: printJobsModel
+
+            TableModelColumn {
+                display: "pages"
             }
-        }
-    }
+            TableModelColumn {
+                display: "copies"
+            }
+            TableModelColumn {
+                display: "created_on"
+            }
+            TableModelColumn {
+                display: "cost"
+            }
+            TableModelColumn {
+                display: "print_job_id"
+            }
+            TableModelColumn {
+                display: "print_job_id"
+            }
 
-    model: TableModel {
-        id: printJobsModel
+            property var headerRow: {
+                "copies": qsTr("Copies"),
+                "print_file_id": qsTr("Preview"),
+                "pages": qsTr("Pages"),
+                "print_job_id": qsTr("Release"),
+                "created_on": qsTr("Created on"),
+                "cost": qsTr("Cost")
+            }
 
-        TableModelColumn {
-            display: "pages"
-        }
-        TableModelColumn {
-            display: "copies"
-        }
-        TableModelColumn {
-            display: "created_on"
-        }
-        TableModelColumn {
-            display: "cost"
-        }
-        TableModelColumn {
-            display: "print_job_id"
-        }
-        TableModelColumn {
-            display: "print_job_id"
-        }
+            property var prices: ({})
 
-        property var headerRow: {
-            "copies": qsTr("Copies"),
-            "print_file_id": qsTr("Preview"),
-            "pages": qsTr("Pages"),
-            "print_job_id": qsTr("Release"),
-            "created_on": qsTr("Created on"),
-            "cost": qsTr("Cost")
-        }
+            property string urlTemplate: "%1/api/printstation/v1_0/print_jobs?api_key=%2&username=%3&password=%4"
 
-        property var prices: ({})
+            property string myApiKey: ""
+            property string myServerAddress: ""
+            property string myUsername: ""
+            property string myPassword: ""
 
-        property string urlTemplate: "%1/api/printstation/v1_0/print_jobs?api_key=%2&username=%3&password=%4"
+            signal load(string username, string password, string apiKey, string serverAddress)
+            onLoad: function (username, password, apiKey, serverAddress) {
+                myUsername = username
+                myPassword = password
+                myApiKey = apiKey
+                myServerAddress = serverAddress
 
-        property string myApiKey: ""
-        property string myServerAddress: ""
-        property string myUsername: ""
-        property string myPassword: ""
+                printJobsModel.setRow(0, headerRow)
 
-        signal load(string username, string password, string apiKey, string serverAddress)
-        onLoad: function (username, password, apiKey, serverAddress) {
-            myUsername = username
-            myPassword = password
-            myApiKey = apiKey
-            myServerAddress = serverAddress
+                refreshPrintJobsTimer.running = true
+            }
 
-            printJobsModel.setRow(0, headerRow)
-
-            refreshPrintJobsTimer.running = true
-        }
-
-        function refreshPrintJobsTable() {
-            var xhr = new XMLHttpRequest
-            var url = urlTemplate.arg(myServerAddress).arg(myApiKey).arg(
-                        myUsername).arg(myPassword)
-            console.log("URL: " + url)
-            xhr.open("GET", url)
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    let data = JSON.parse(xhr.responseText)
-                    let j = 1
+            function refreshPrintJobsTable() {
+                var xhr = new XMLHttpRequest
+                var url = urlTemplate.arg(myServerAddress).arg(myApiKey).arg(
+                            myUsername).arg(myPassword)
+                console.log("URL: " + url)
+                xhr.open("GET", url)
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        let data = JSON.parse(xhr.responseText)
+                        let j = 1
 
 
-                    /* Clearing the table and creating all the updated rows at once causes drawing flicker,
+                        /* Clearing the table and creating all the updated rows at once causes drawing flicker,
                        to prevent this we update one row at a time and clear any remaining rows */
-                    for (var i in data) {
-                        const copies = data[i].copies
-                        const cost = data[i].cost
-                        const created_on = data[i].created_on
-                        const pages = data[i].pages
-                        const print_file_id = data[i].print_file_id
-                        const print_job_id = data[i].print_job_id
+                        for (var i in data) {
+                            const copies = data[i].copies
+                            const cost = data[i].cost
+                            const created_on = data[i].created_on
+                            const pages = data[i].pages
+                            const print_file_id = data[i].print_file_id
+                            const print_job_id = data[i].print_job_id
 
-                        prices[print_job_id] = cost
+                            prices[print_job_id] = cost
 
-                        let rowData = {
-                            "copies": copies,
-                            "cost": qsTr("$") + parseFloat(cost).toFixed(2),
-                            "created_on": created_on,
-                            "pages": pages,
-                            "print_file_id": print_file_id,
-                            "print_job_id": print_job_id
+                            let rowData = {
+                                "copies": copies,
+                                "cost": qsTr("$") + parseFloat(cost).toFixed(2),
+                                "created_on": created_on,
+                                "pages": pages,
+                                "print_file_id": print_file_id,
+                                "print_job_id": print_job_id
+                            }
+
+                            if (j < printJobsModel.rowcount) {
+                                printJobsModel.setRow(j, rowData)
+                            } else {
+                                printJobsModel.appendRow(rowData)
+                            }
+                            j++
                         }
 
-                        if (j < printJobsModel.rowcount) {
-                            printJobsModel.setRow(j, rowData)
-                        } else {
-                            printJobsModel.appendRow(rowData)
+                        if (printJobsModel.rowCount > j) {
+                            printJobsModel.removeRow(
+                                        j, printJobsModel.rowCount - j)
                         }
-                        j++
-                    }
-
-                    if (printJobsModel.rowCount > j) {
-                        printJobsModel.removeRow(j, printJobsModel.rowCount - j)
                     }
                 }
+                xhr.send()
             }
-            xhr.send()
         }
     }
 }

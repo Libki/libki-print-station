@@ -63,7 +63,7 @@ Window {
                 title: qsTr("Release print jobs to printer")
 
                 Layout.minimumWidth: mainWindow.width
-                Layout.minimumHeight: 400
+                Layout.minimumHeight: 500
                 Layout.preferredWidth: parent.width
                 PrintRelease {
                     id: printRelease

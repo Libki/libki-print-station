@@ -3,6 +3,7 @@ import Qt.labs.qmlmodels 1.0
 import QtQuick.Controls 2.5
 import QtQuick.Controls
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs
 
 import "functions.js" as Functions
 
@@ -39,7 +40,7 @@ ColumnLayout {
 
         Timer {
             id: refreshPrintJobsTimer
-            interval: 500
+            interval: 5000
             running: false
             repeat: true
             onTriggered: printJobsModel.refreshPrintJobsTable()
@@ -162,10 +163,74 @@ ColumnLayout {
                 }
             }
             DelegateChoice {
+                column: 6
+                delegate: Button {
+                    text: qsTr("Cancel")
+                    enabled: true //Should be status == "Held"
+                    property var printJobId: model.display
+                    onClicked: {
+                        confirmCancelDialog.printJobId = printJobId
+                        confirmCancelDialog.open()
+                    }
+                }
+            }
+            DelegateChoice {
                 delegate: Label {
                     text: model.display
                     width: 200
                 }
+            }
+        }
+
+        Dialog {
+            id: confirmCancelDialog
+            title: qsTr("Cancel print job?")
+            modal: true
+            focus: true
+
+            parent: Overlay.overlay
+
+            property var printJobId
+
+            x: Math.round((parent.width - width) / 2)
+            y: Math.round((parent.height - height) / 3)
+            standardButtons: Dialog.Yes | Dialog.No
+
+            onAccepted: {
+                console.log("Ok clicked: " + printJobId)
+
+                const url = Functions.build_print_cancel_url(
+                              printJobsModel.myServerAddress,
+                              printJobsModel.myApiKey,
+                              printJobsModel.myUsername,
+                              printJobsModel.myPassword, printJobId)
+
+                Functions.request(url, function (o) {
+                    // translate response into an object
+                    var d = eval('new Object(' + o.responseText + ')')
+                    console.log("PRINT JOB CANCEL RESPONSE: " + o.responseText)
+
+                    if (d.success) {
+                        popupDialogText.text = qsTr(
+                                    "Your print job has been canceled.")
+                    } else {
+                        if (d.error === "INVALID_API_KEY") {
+                            popupDialogText.text = qsTr(
+                                        "Unable to authenticate. API key is invalid.")
+                        } else if (d.error === "INVALID_USER") {
+                            popupDialogText.text = qsTr("Unable to find user.")
+                        } else {
+                            popupDialogText.text = d.error
+                        }
+                    }
+
+                    printJobsModel.load(printJobsModel.myUsername,
+                                        printJobsModel.myPassword,
+                                        printJobsModel.myApiKey,
+                                        printJobsModel.myServerAddress)
+
+                    popupDialog.open()
+                }, 'POST')
             }
         }
 
@@ -190,12 +255,16 @@ ColumnLayout {
             TableModelColumn {
                 display: "print_job_id"
             }
+            TableModelColumn {
+                display: "cancel_print_job_id"
+            }
 
             property var headerRow: {
                 "copies": qsTr("Copies"),
                 "print_file_id": qsTr("Preview"),
                 "pages": qsTr("Pages"),
-                "print_job_id": qsTr("Release"),
+                "print_job_id": "",
+                "cancel_print_job_id": "",
                 "created_on": qsTr("Created on"),
                 "cost": qsTr("Cost")
             }
@@ -251,7 +320,8 @@ ColumnLayout {
                                 "created_on": created_on,
                                 "pages": pages,
                                 "print_file_id": print_file_id,
-                                "print_job_id": print_job_id
+                                "print_job_id": print_job_id,
+                                "cancel_print_job_id": print_job_id
                             }
 
                             if (j < printJobsModel.rowcount) {

@@ -25,7 +25,6 @@ ColumnLayout {
     Text {
         id: printButtonWarning
         text: qsTr('If enough funds are available, printing will start immediately when the "print" button is clicked.')
-        anchors.top: parent.top
     }
 
     TableView {

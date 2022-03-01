@@ -1,11 +1,13 @@
 import Qt.labs.platform
 
-import QtQuick 2.12
-import QtQuick.Controls 2.15
-import QtQuick.Dialogs
-import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
+
+import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
+import QtQuick.Controls 2.5 as MyControls
+import QtQuick.Controls
+import QtQuick.Layouts 1.12
+import QtQuick.Dialogs
 
 import "functions.js" as Functions
 
@@ -19,12 +21,21 @@ Window {
     visibility: backend.mainWindowVisibility
     title: qsTr("Libki Print Station")
 
-    MessageDialog {
+    MyControls.Dialog {
         id: messageDialog
         title: qsTr("Unable to log in")
-        text: ""
-        //icon: StandardIcon.Warning
-        modality: Qt.WindowModal
+        modal: true
+        focus: true
+
+        parent: Overlay.overlay
+
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 3)
+        standardButtons: Dialog.Ok
+
+        Text {
+            id: messageDialogText
+        }
     }
 
     BackEnd {
@@ -205,24 +216,24 @@ Window {
                                                       api_key, server_address)
                                 } else {
                                     if (d.error === "SIP_ACS_OFFLINE") {
-                                        messageDialog.text = qsTr(
+                                        messageDialogText.text = qsTr(
                                                     "Unable to authenticate. ILS is offline for SIP.")
                                     } else if (d.error === "SIP_AUTH_FAILURE") {
-                                        messageDialog.text = qsTr(
+                                        messageDialogText.text = qsTr(
                                                     "Unable to authenticate. ILS login for SIP failed.")
                                     } else if (d.error === "INVALID_API_KEY") {
-                                        messageDialog.text = qsTr(
+                                        messageDialogText.text = qsTr(
                                                     "Unable to authenticate. API key is invalid.")
                                     } else if (d.error === "FEE_LIMIT") {
-                                        messageDialog.text(
+                                        messageDialogText.text(
                                                     "Unable to log in, you own too many fees.")
                                     } else if (d.error === "INVALID_USER"
                                                || d.error == "INVALID_PASSWORD"
                                                || d.error == "BAD_LOGIN") {
-                                        messageDialog.text = qsTr(
+                                        messageDialogText.text = qsTr(
                                                     "Username & password do not match.")
                                     } else {
-                                        messageDialog.text = qsTr(
+                                        messageDialogText.text = qsTr(
                                                     "Unable to authenticate. Error code: ")
                                                 + d.error
                                     }
@@ -232,7 +243,7 @@ Window {
                                     backend.userName = ""
                                     backend.userPassword = ""
 
-                                    messageDialog.visible = true
+                                    messageDialog.open()
 
                                     textFieldUsername.focus = true
                                 }

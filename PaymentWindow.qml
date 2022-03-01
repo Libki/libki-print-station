@@ -6,6 +6,13 @@ import QtQuick.Dialogs
 import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
 
+import QtQuick 2.12
+import Qt.labs.qmlmodels 1.0
+import QtQuick.Controls 2.5
+import QtQuick.Controls
+import QtQuick.Layouts 1.12
+import QtQuick.Dialogs
+
 import "functions.js" as Functions
 
 import io.qt.libki_jamex.backend 1.0
@@ -44,13 +51,13 @@ RowLayout {
     }
     function updateJamexBalanceAmount() {
         var jbalance_float = parseFloat(backend.jamexBalance)
-        currentJamexMachineBalance = jbalance;
+        currentJamexMachineBalance = jbalance_float
         var jbalance = jbalance_float.toFixed(2)
         if (jamexBalanceAmount.text.substring(1) != jbalance) {
             jamexBalanceAmount.text = qsTr("$") + jbalance
-            spinbox.to = jbalance * 100
+            amountToTransferSpinbox.to = jbalance * 100
 
-            var balanceForLibki = spinbox.value / 100
+            var balanceForLibki = amountToTransferSpinbox.value / 100
             var remainder = jbalance - balanceForLibki
             balanceToReturn.text = qsTr("$") + remainder.toFixed(2)
         }
@@ -76,7 +83,7 @@ RowLayout {
         }
 
         SpinBox {
-            id: spinbox
+            id: amountToTransferSpinbox
             from: 0
             value: 0
             to: backend.jamexBalance * 100
@@ -86,13 +93,13 @@ RowLayout {
             property int decimals: 2
 
             validator: DoubleValidator {
-                bottom: Math.min(spinbox.from, spinbox.to)
-                top: Math.max(spinbox.from, spinbox.to)
+                bottom: Math.min(amountToTransferSpinbox.from, amountToTransferSpinbox.to)
+                top: Math.max(amountToTransferSpinbox.from, amountToTransferSpinbox.to)
             }
 
             textFromValue: function (value, locale) {
                 return Number(value / 100).toLocaleString(locale, 'f',
-                                                          spinbox.decimals)
+                                                          amountToTransferSpinbox.decimals)
             }
 
             valueFromText: function (text, locale) {
@@ -101,7 +108,7 @@ RowLayout {
 
             onValueModified: {
                 var jamexBalance = jamexBalanceAmount.text.substring(1)
-                var balanceForLibki = spinbox.value / 100
+                var balanceForLibki = amountToTransferSpinbox.value / 100
                 var remainder = jamexBalance - balanceForLibki
                 balanceToReturn.text = qsTr("$") + remainder.toFixed(2)
             }
@@ -123,14 +130,14 @@ RowLayout {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             onClicked: {
                 var username = backend.userName
-                var funds = spinbox.value / 100
+                var funds = amountToTransferSpinbox.value / 100
                 var api_key = backend.serverApiKey
                 var server_address = backend.serverAddress
                 var path = '/api/public/user_funds/'
                 var url = server_address + path + "?api_key=" + api_key
                         + "&username=" + username + "&funds=" + funds
 
-                if ( spinbox.value == 0 ) {
+                if ( amountToTransferSpinbox.value == 0 ) {
                     return;
                 }
 
@@ -142,7 +149,7 @@ RowLayout {
                     var success
 
                     if (d.success) {
-                        var balanceForLibki = spinbox.value / 100
+                        var balanceForLibki = amountToTransferSpinbox.value / 100
                         var amount_to_deduct = balanceForLibki.toFixed(2)
 
                         paymentDialog.text = qsTr(

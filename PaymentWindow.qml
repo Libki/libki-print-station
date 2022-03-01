@@ -22,6 +22,9 @@ RowLayout {
     //                success = backend.jamexReturnBalance;
     //            }
     //        }
+
+    property double currentJamexMachineBalance: 0
+
     BackEnd {
         id: backend
     }
@@ -40,7 +43,9 @@ RowLayout {
         onTriggered: updateJamexBalanceAmount()
     }
     function updateJamexBalanceAmount() {
-        var jbalance = parseFloat(backend.jamexBalance).toFixed(2)
+        var jbalance_float = parseFloat(backend.jamexBalance)
+        currentJamexMachineBalance = jbalance;
+        var jbalance = jbalance_float.toFixed(2)
         if (jamexBalanceAmount.text.substring(1) != jbalance) {
             jamexBalanceAmount.text = qsTr("$") + jbalance
             spinbox.to = jbalance * 100

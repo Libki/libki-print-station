@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.12
 import "functions.js" as Functions
 
 GridLayout {
+    id: libkiBalance
+
     rows: 1
     columns: 2
     anchors.top: parent.top + (parent.top / 4)
@@ -14,6 +16,7 @@ GridLayout {
     property string serverAddress
 
     property string balance
+    property double currentLibkiBalance: 0
 
     signal load(string u, string p, string a, string s)
     onLoad: function (u, p, a, s) {
@@ -55,7 +58,8 @@ GridLayout {
             console.log(data.funds)
 
         balance = data.funds
-        libkiBalanceAmount.text = qsTr("$") + parseFloat(balance).toFixed(2)
+        currentLibkiBalance = parseFloat( balance )
+        libkiBalanceAmount.text = qsTr("$") + currentLibkiBalance.toFixed(2)
         }, 'GET')
     }
 

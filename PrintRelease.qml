@@ -116,7 +116,7 @@ ColumnLayout {
                 column: 5
                 delegate: Button {
                     text: qsTr("Print")
-                    enabled: libkiBalance.balance >= printJobsModel.prices[model.display]
+                    enabled: libkiBalance.currentLibkiBalance + paymentWindow.currentJamexMachineBalance >= printJobsModel.prices[model.display]
                     property var printJobId: model.display
                     onClicked: {
                         if (printJobsModel.prices[printJobId] > libkiBalance.balance) {
@@ -286,6 +286,8 @@ ColumnLayout {
                 myServerAddress = serverAddress
 
                 printJobsModel.setRow(0, headerRow)
+
+                printJobsModel.refreshPrintJobsTable()
 
                 refreshPrintJobsTimer.running = true
             }

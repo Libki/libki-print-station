@@ -74,10 +74,6 @@ ColumnLayout {
             standardButtons: Dialog.Ok
             property var dialogPrintJobId
             contentItem: Item {
-
-                //         Text {
-                //             text: image.status == Image.Ready ? 'Loaded' : 'Not loaded'
-                //         }
                 Image {
                     id: printPreviewImage
                     height: parent.height
@@ -116,19 +112,41 @@ ColumnLayout {
                 column: 5
                 delegate: Button {
                     text: qsTr("Print")
-                    enabled: libkiBalance.currentLibkiBalance + paymentWindow.currentJamexMachineBalance >= printJobsModel.prices[model.display]
+                    enabled: libkiBalance.currentLibkiBalance
+                             + paymentWindow.currentJamexMachineBalance
+                             >= printJobsModel.prices[model.display]
                     property var printJobId: model.display
                     onClicked: {
-                        if (printJobsModel.prices[printJobId] > libkiBalance.balance) {
+                        let print_job_cost = printJobsModel.prices[printJobId]
+                        let libki_balance = libkiBalance.balance
+                        let jamex_balance = paymentWindow.currentJamexMachineBalance
+
+                        if (print_job_cost > libki_balance + jamex_balance) {
                             popupDialogText.text = qsTr("Insufficient funds!")
                             popupDialog.open()
                             return
                         }
+
+                        // The current balance isn't enough to pay for the job, we need to transfer some funds first
+                        if (print_job_cost > libki_balance) {
+                            let amount_needed = print_job_cost - libki_balance
+                            paymentWindow.transferAmount(amount_needed * 100)
+
+                            // The above call is asynchronus, wait until the amount has transferred
+                            let i = 1
+                            while (print_job_cost > libki_balance) {
+                                libki_balance = libkiBalance.balance
+                                console.log(i + ": " + libki_balance)
+                                i++
+                            }
+                        }
+
                         const url = Functions.build_print_release_url(
                                       printJobsModel.myServerAddress,
                                       printJobsModel.myApiKey,
                                       printJobsModel.myUsername,
                                       printJobsModel.myPassword, printJobId)
+
                         Functions.request(url, function (o) {
                             // translate response into an object
                             var d = eval('new Object(' + o.responseText + ')')
@@ -162,6 +180,7 @@ ColumnLayout {
                     }
                 }
             }
+
             DelegateChoice {
                 column: 6
                 delegate: Button {
@@ -174,6 +193,7 @@ ColumnLayout {
                     }
                 }
             }
+
             DelegateChoice {
                 delegate: Label {
                     text: model.display

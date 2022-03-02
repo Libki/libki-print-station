@@ -29,7 +29,6 @@ RowLayout {
     //                success = backend.jamexReturnBalance;
     //            }
     //        }
-
     property double currentJamexMachineBalance: 0
 
     BackEnd {
@@ -49,6 +48,7 @@ RowLayout {
         repeat: true
         onTriggered: updateJamexBalanceAmount()
     }
+
     function updateJamexBalanceAmount() {
         var jbalance_float = parseFloat(backend.jamexBalance)
         currentJamexMachineBalance = jbalance_float
@@ -61,6 +61,76 @@ RowLayout {
             var remainder = jbalance - balanceForLibki
             balanceToReturn.text = qsTr("$") + remainder.toFixed(2)
         }
+    }
+
+    function transferAmount(amount) {
+        amountToTransferSpinbox.value = amount
+        transferFunds(false)
+    }
+
+    function transferFunds(autoReturnBalance) {
+        transferFundsButton.enabled = false
+        var username = backend.userName
+        var funds = amountToTransferSpinbox.value / 100
+        var api_key = backend.serverApiKey
+        var server_address = backend.serverAddress
+        var path = '/api/public/user_funds/'
+        var url = server_address + path + "?api_key=" + api_key + "&username="
+                + username + "&funds=" + funds
+
+        if (amountToTransferSpinbox.value == 0) {
+            transferFundsButton.enabled = true
+            return
+        }
+
+        //backend.jamexDisableChangeCardReturn;
+        Functions.request(url, function (o) {
+            // translate response into an object
+            var d = eval('new Object(' + o.responseText + ')')
+
+            var success
+            console.log("PAYMENT RESPONSE:")
+            console.log(d)
+
+            if (d.success) {
+                var balanceForLibki = amountToTransferSpinbox.value / 100
+                var amount_to_deduct = balanceForLibki.toFixed(2)
+
+                paymentDialog.text = qsTr("Funds have been transferred!")
+                paymentDialog.visible = true
+
+                console.log("AMOUNT TO DEDUCT: " + amount_to_deduct)
+                backend.jamexDeductAmount = amount_to_deduct
+                success = backend.jamexDeductAmount
+                if (success === "false") {
+                    // Must pass string, not bool
+                    paymentDialog.text = qsTr(
+                                "Unable to deduct amount from Jamex machine. Please ask staff for help")
+                    paymentDialog.visible = true
+                }
+            } else {
+                if (d.error === "INVALID_API_KEY") {
+                    mssageDialog.text = qsTr(
+                                "Unable to authenticate. API key is invalid.")
+                } else if (d.error === "INVALID_USER") {
+                    messageDialog.text(qsTr("Unable to find user."))
+                } else {
+                    messageDialog.text = qsTr(
+                                "Unable to add funds. Error code: ") + d.error
+                }
+
+                messageDialog.visible = true
+            }
+
+            if (autoReturnBalance) {
+                success = backend.jamexReturnBalance
+            }
+            success = backend.jamexEnableChangeCardReturn
+
+            amountToTransferSpinbox.value = 0
+
+            transferFundsButton.enabled = true
+        }, 'POST')
     }
 
     GridLayout {
@@ -93,13 +163,15 @@ RowLayout {
             property int decimals: 2
 
             validator: DoubleValidator {
-                bottom: Math.min(amountToTransferSpinbox.from, amountToTransferSpinbox.to)
-                top: Math.max(amountToTransferSpinbox.from, amountToTransferSpinbox.to)
+                bottom: Math.min(amountToTransferSpinbox.from,
+                                 amountToTransferSpinbox.to)
+                top: Math.max(amountToTransferSpinbox.from,
+                              amountToTransferSpinbox.to)
             }
 
             textFromValue: function (value, locale) {
-                return Number(value / 100).toLocaleString(locale, 'f',
-                                                          amountToTransferSpinbox.decimals)
+                return Number(value / 100).toLocaleString(
+                            locale, 'f', amountToTransferSpinbox.decimals)
             }
 
             valueFromText: function (text, locale) {
@@ -126,65 +198,10 @@ RowLayout {
         Text {}
 
         Button {
+            id: transferFundsButton
             text: qsTr("Transfer funds")
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            onClicked: {
-                var username = backend.userName
-                var funds = amountToTransferSpinbox.value / 100
-                var api_key = backend.serverApiKey
-                var server_address = backend.serverAddress
-                var path = '/api/public/user_funds/'
-                var url = server_address + path + "?api_key=" + api_key
-                        + "&username=" + username + "&funds=" + funds
-
-                if ( amountToTransferSpinbox.value == 0 ) {
-                    return;
-                }
-
-                //backend.jamexDisableChangeCardReturn;
-                Functions.request(url, function (o) {
-                    // translate response into an object
-                    var d = eval('new Object(' + o.responseText + ')')
-
-                    var success
-
-                    if (d.success) {
-                        var balanceForLibki = amountToTransferSpinbox.value / 100
-                        var amount_to_deduct = balanceForLibki.toFixed(2)
-
-                        paymentDialog.text = qsTr(
-                                    "Funds have been transferred!")
-                        paymentDialog.visible = true
-
-                        console.log("AMOUNT TO DEDUCT: " + amount_to_deduct)
-                        backend.jamexDeductAmount = amount_to_deduct
-                        success = backend.jamexDeductAmount
-                        if (success === "false") {
-                            // Must pass string, not bool
-                            paymentDialog.text = qsTr(
-                                        "Unable to deduct amount from Jamex machine. Please ask staff for help")
-                            paymentDialog.visible = true
-                        }
-                    } else {
-                        if (d.error === "INVALID_API_KEY") {
-                            mssageDialog.text = qsTr(
-                                        "Unable to authenticate. API key is invalid.")
-                        } else if (d.error === "INVALID_USER") {
-                            messageDialog.text(qsTr("Unable to find user."))
-                        } else {
-                            messageDialog.text = qsTr(
-                                        "Unable to add funds. Error code: ") + d.error
-                        }
-
-                        messageDialog.visible = true
-                    }
-
-                    success = backend.jamexReturnBalance
-                    success = backend.jamexEnableChangeCardReturn
-
-                    paymentWindow.hide()
-                }, 'POST')
-            }
+            onClicked: transferFunds(true)
         }
     }
 }

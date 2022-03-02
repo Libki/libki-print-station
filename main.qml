@@ -98,6 +98,10 @@ Window {
                         textFieldUsername.clear()
                         textFieldPassword.clear()
                         textFieldUsername.focus = true
+
+                        var success
+                        success = backend.jamexReturnBalance
+                        success = backend.jamexEnableChangeCardReturn
                     }
                 }
             }

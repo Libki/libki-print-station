@@ -28,6 +28,39 @@ ColumnLayout {
         text: qsTr('If enough funds are available, printing will start immediately when the "print" button is clicked.')
     }
 
+    function release_print_job(print_job_id) {
+        const url = Functions.build_print_release_url(
+                      printJobsModel.myServerAddress, printJobsModel.myApiKey,
+                      printJobsModel.myUsername, printJobsModel.myPassword,
+                      print_job_id)
+        console.log("RELEASE PRINT JOB URL: " + url)
+
+        Functions.request(url, function (o) {
+            // translate response into an object
+            var d = eval('new Object(' + o.responseText + ')')
+            console.log("PRINT JOB RELEASE RESPONSE: " + o.responseText)
+
+            if (d.success) {
+                popupDialogText.text = qsTr(
+                            "Your print job has been submitted.")
+            } else {
+                if (d.error === "INVALID_API_KEY") {
+                    popupDialogText.text = qsTr(
+                                "Unable to authenticate. API key is invalid.")
+                } else if (d.error === "INVALID_USER") {
+                    popupDialogText.text = qsTr("Unable to find user.")
+                } else if (d.error === "INSUFFICIENT_FUNDS") {
+                    popupDialogText.text = qsTr("Insufficient funds.")
+                } else {
+                    popupDialogText.text = d.error
+                }
+            }
+
+            printJobsModel.refreshPrintJobsTable()
+            popupDialog.open()
+        }, 'POST')
+    }
+
     TableView {
         id: printJobsTableView
 
@@ -60,7 +93,7 @@ ColumnLayout {
 
             Text {
                 id: popupDialogText
-                text: qsTr("Your print job has been submitted.")
+                text: ""
             }
         }
 
@@ -93,7 +126,7 @@ ColumnLayout {
                 }
             }
             DelegateChoice {
-                column: 4
+                column: 5
                 delegate: Button {
                     text: "Preview"
                     property var printJobId: model.display
@@ -109,7 +142,7 @@ ColumnLayout {
                 }
             }
             DelegateChoice {
-                column: 5
+                column: 6
                 delegate: Button {
                     text: qsTr("Print")
                     enabled: libkiBalance.currentLibkiBalance
@@ -117,6 +150,7 @@ ColumnLayout {
                              >= printJobsModel.prices[model.display]
                     property var printJobId: model.display
                     onClicked: {
+                        console.log("AAA PRINT JOB ID: " + printJobId)
                         let print_job_cost = printJobsModel.prices[printJobId]
                         let libki_balance = libkiBalance.balance
                         let jamex_balance = paymentWindow.currentJamexMachineBalance
@@ -129,60 +163,61 @@ ColumnLayout {
 
                         // The current balance isn't enough to pay for the job, we need to transfer some funds first
                         if (print_job_cost > libki_balance) {
-                            let amount_needed = print_job_cost - libki_balance
-                            paymentWindow.transferAmount(amount_needed * 100)
+                            console.log("TRANSFERRING FUNDS FROM JAMEX TO LIBKI FOR PRINT RELEASE")
+                            let funds = print_job_cost - libki_balance
 
-                            // The above call is asynchronus, wait until the amount has transferred
-                            let i = 1
-                            while (print_job_cost > libki_balance) {
-                                libki_balance = libkiBalance.balance
-                                console.log(i + ": " + libki_balance)
-                                i++
-                            }
-                        }
+                            let username = backend.userName
+                            let api_key = backend.serverApiKey
+                            let server_address = backend.serverAddress
+                            let url = Functions.build_add_user_funds_url(
+                                    server_address, api_key, username, funds)
 
-                        const url = Functions.build_print_release_url(
-                                      printJobsModel.myServerAddress,
-                                      printJobsModel.myApiKey,
-                                      printJobsModel.myUsername,
-                                      printJobsModel.myPassword, printJobId)
+                            //backend.jamexDisableChangeCardReturn;
+                            Functions.request(url, function (o) {
+                                // translate response into an object
+                                var d = eval('new Object(' + o.responseText + ')')
 
-                        Functions.request(url, function (o) {
-                            // translate response into an object
-                            var d = eval('new Object(' + o.responseText + ')')
-                            console.log("PRINT JOB RELEASE RESPONSE: " + o.responseText)
+                                var success
+                                if (d.success) {
+                                    success = paymentWindow.deductAmount(funds)
 
-                            if (d.success) {
-                                popupDialogText.text = qsTr(
-                                            "Your print job has been submitted.")
-                            } else {
-                                if (d.error === "INVALID_API_KEY") {
-                                    popupDialogText.text = qsTr(
-                                                "Unable to authenticate. API key is invalid.")
-                                } else if (d.error === "INVALID_USER") {
-                                    popupDialogText.text = qsTr(
-                                                "Unable to find user.")
-                                } else if (d.error === "INSUFFICIENT_FUNDS") {
-                                    popupDialogText.text = qsTr(
-                                                "Insufficient funds.")
+                                    if (success === "false") {
+                                        popupDialogText.text = qsTr(
+                                                    "Unable to deduct amount from Jamex machine. Please ask staff for help")
+                                        popupDialog.open()
+                                        success = backend.jamexEnableChangeCardReturn
+                                        return
+                                    }
                                 } else {
-                                    popupDialogText.text = d.error
+                                    if (d.error === "INVALID_API_KEY") {
+                                        popupDialogText.text = qsTr(
+                                                    "Unable to authenticate. API key is invalid.")
+                                    } else if (d.error === "INVALID_USER") {
+                                        popupDialogText.text(
+                                                    qsTr(
+                                                        "Unable to find user."))
+                                    } else {
+                                        popupDialogText.text = qsTr(
+                                                    "Unable to add funds. Error code: ") + d.error
+                                    }
+
+                                    popupDialog.open()
+                                    success = backend.jamexEnableChangeCardReturn
+                                    return
                                 }
-                            }
 
-                            printJobsModel.load(printJobsModel.myUsername,
-                                                printJobsModel.myPassword,
-                                                printJobsModel.myApiKey,
-                                                printJobsModel.myServerAddress)
-
-                            popupDialog.open()
-                        }, 'POST')
+                                success = backend.jamexEnableChangeCardReturn
+                                release_print_job(printJobId)
+                            }, 'POST')
+                        } else {
+                           release_print_job(printJobId)
+                        }
                     }
                 }
             }
 
             DelegateChoice {
-                column: 6
+                column: 7
                 delegate: Button {
                     text: qsTr("Cancel")
                     enabled: true //Should be status == "Held"
@@ -258,6 +293,9 @@ ColumnLayout {
             id: printJobsModel
 
             TableModelColumn {
+                display: "id"
+            }
+            TableModelColumn {
                 display: "pages"
             }
             TableModelColumn {
@@ -280,6 +318,7 @@ ColumnLayout {
             }
 
             property var headerRow: {
+                "id": qsTr("ID"),
                 "copies": qsTr("Copies"),
                 "print_file_id": qsTr("Preview"),
                 "pages": qsTr("Pages"),
@@ -337,6 +376,7 @@ ColumnLayout {
                             prices[print_job_id] = cost
 
                             let rowData = {
+                                "id": print_job_id,
                                 "copies": copies,
                                 "cost": qsTr("$") + parseFloat(cost).toFixed(2),
                                 "created_on": created_on,

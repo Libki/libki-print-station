@@ -30,3 +30,8 @@ function build_user_funds_available_url( url, api_key, username, password ) {
     const print_preview_url_template = "%1/api/printstation/v1_0/funds_available/?api_key=%2&username=%3&password=%4"
     return print_preview_url_template.arg(url).arg(api_key).arg(username).arg(password);
 }
+
+function build_add_user_funds_url( url, api_key, username, funds ) {
+    const print_preview_url_template = "%1/api/public/user_funds/?api_key=%2&username=%3&funds=%4"
+    return print_preview_url_template.arg(url).arg(api_key).arg(username).arg(funds);
+}

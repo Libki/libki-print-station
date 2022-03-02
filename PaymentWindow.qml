@@ -31,10 +31,6 @@ RowLayout {
     //        }
     property double currentJamexMachineBalance: 0
 
-    BackEnd {
-        id: backend
-    }
-
     MessageDialog {
         id: paymentDialog
         title: qsTr("Payment confirmed")
@@ -63,20 +59,24 @@ RowLayout {
         }
     }
 
-    function transferAmount(amount) {
-        amountToTransferSpinbox.value = amount
-        transferFunds(false)
+    function deductAmount(amount) {
+        let a = amount.toFixed(2)
+        console.log("AMOUNT TO DEDUCT: " + a)
+        backend.jamexDeductAmount = a
+        const success = backend.jamexDeductAmount
+        return success
     }
 
-    function transferFunds(autoReturnBalance) {
+    function transferFunds() {
         transferFundsButton.enabled = false
         var username = backend.userName
         var funds = amountToTransferSpinbox.value / 100
         var api_key = backend.serverApiKey
         var server_address = backend.serverAddress
         var path = '/api/public/user_funds/'
-        var url = server_address + path + "?api_key=" + api_key + "&username="
-                + username + "&funds=" + funds
+
+        let url = Functions.build_add_user_funds_url(server_address, api_key,
+                                                     username, funds)
 
         if (amountToTransferSpinbox.value == 0) {
             transferFundsButton.enabled = true
@@ -122,9 +122,7 @@ RowLayout {
                 messageDialog.visible = true
             }
 
-            if (autoReturnBalance) {
-                success = backend.jamexReturnBalance
-            }
+            success = backend.jamexReturnBalance
             success = backend.jamexEnableChangeCardReturn
 
             amountToTransferSpinbox.value = 0

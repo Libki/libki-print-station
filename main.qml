@@ -31,7 +31,6 @@ Window {
 
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 3)
-        standardButtons: Dialog.Ok
 
         Text {
             id: messageDialogText

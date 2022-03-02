@@ -19,13 +19,23 @@ ColumnLayout {
 
     signal unload
     onUnload: function () {
-        refreshPrintJobsTimer.running = false
         printJobsModel.clear()
     }
 
     Text {
         id: printButtonWarning
         text: qsTr('If enough funds are available, printing will start immediately when the "print" button is clicked.')
+    }
+
+    Button {
+        id: refreshPrintJobsTableButton
+        text: qsTr("Refresh")
+        enabled: true
+        onClicked: {
+            console.log("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            printJobsModel.refreshPrintJobsTable()
+            console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+        }
     }
 
     function release_print_job(print_job_id) {
@@ -65,19 +75,11 @@ ColumnLayout {
         id: printJobsTableView
 
         anchors.fill: parent
-        topMargin: 10
+        topMargin: 20
         columnSpacing: 10
         rowSpacing: 10
         anchors.top: printButtonWarning.bottom
-        anchors.topMargin: printButtonWarning.height + 5
-
-        Timer {
-            id: refreshPrintJobsTimer
-            interval: 5000
-            running: false
-            repeat: true
-            onTriggered: printJobsModel.refreshPrintJobsTable()
-        }
+        anchors.topMargin: printButtonWarning.height + refreshPrintJobsTableButton.height + 5
 
         Dialog {
             id: popupDialog
@@ -210,7 +212,7 @@ ColumnLayout {
                                 release_print_job(printJobId)
                             }, 'POST')
                         } else {
-                           release_print_job(printJobId)
+                            release_print_job(printJobId)
                         }
                     }
                 }
@@ -347,8 +349,6 @@ ColumnLayout {
                 printJobsModel.setRow(0, headerRow)
 
                 printJobsModel.refreshPrintJobsTable()
-
-                refreshPrintJobsTimer.running = true
             }
 
             function refreshPrintJobsTable() {
@@ -360,43 +360,37 @@ ColumnLayout {
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
                         let data = JSON.parse(xhr.responseText)
-                        let j = 1
 
-
-                        /* Clearing the table and creating all the updated rows at once causes drawing flicker,
-                       to prevent this we update one row at a time and clear any remaining rows */
+                        printJobsModel.clear()
+                        printJobsModel.appendRow(headerRow)
                         for (var i in data) {
-                            const copies = data[i].copies
-                            const cost = data[i].cost
-                            const created_on = data[i].created_on
-                            const pages = data[i].pages
-                            const print_file_id = data[i].print_file_id
-                            const print_job_id = data[i].print_job_id
+                            let copies = data[i].copies
+                            let cost = data[i].cost
+                            let created_on = data[i].created_on
+                            let pages = data[i].pages
+                            let print_file_id = data[i].print_file_id
+                            let print_job_id = data[i].print_job_id
 
                             prices[print_job_id] = cost
 
-                            let rowData = {
+                            console.log("COPIES: " + copies)
+                            console.log("COST: " + cost)
+                            console.log("CREATED ON: " + created_on)
+                            console.log("PAGES: " + pages)
+                            console.log("PRINT FILE ID: " + print_file_id)
+                            console.log("PRINT JOG ID: " + print_job_id)
+
+                            let row_data = {
                                 "id": print_job_id,
                                 "copies": copies,
-                                "cost": qsTr("$") + parseFloat(cost).toFixed(2),
-                                "created_on": created_on,
-                                "pages": pages,
                                 "print_file_id": print_file_id,
+                                "pages": pages,
                                 "print_job_id": print_job_id,
-                                "cancel_print_job_id": print_job_id
+                                "cancel_print_job_id": print_job_id,
+                                "created_on": created_on,
+                                "cost": qsTr("$") + parseFloat(cost).toFixed(2)
                             }
-
-                            if (j < printJobsModel.rowcount) {
-                                printJobsModel.setRow(j, rowData)
-                            } else {
-                                printJobsModel.appendRow(rowData)
-                            }
-                            j++
-                        }
-
-                        if (printJobsModel.rowCount > j) {
-                            printJobsModel.removeRow(
-                                        j, printJobsModel.rowCount - j)
+                            printJobsModel.appendRow(row_data)
                         }
                     }
                 }

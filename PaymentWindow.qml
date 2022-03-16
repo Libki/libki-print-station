@@ -156,7 +156,7 @@ RowLayout {
             value: 0
             to: backend.jamexBalance * 100
             stepSize: 1
-            editable: backend.JamexBalance > 0
+            editable: true
 
             property int decimals: 2
 

@@ -130,6 +130,7 @@ QString BackEnd::serverApiKey() {
     return libkiServerApiKey;
 }
 
+// Valid values are "Windowed", "Maximized", or "FullScreen"
 QString BackEnd::mainWindowVisibility() {
     QString libkiMainWindowVisibility = settings.value("client/visibility").toString();
     qDebug() << "CLIENT MAIN WINDOW VISIBILITY: " << libkiMainWindowVisibility;

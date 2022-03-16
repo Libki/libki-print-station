@@ -51,7 +51,6 @@ GridLayout {
         const url = Functions.build_user_funds_available_url(serverAddress,
                                                              apiKey, username,
                                                              password)
-        console.log("LIBKI BALANCE URL: " + url)
 
         Functions.request(url, function (o) {
             var data = eval('new Object(' + o.responseText + ')')

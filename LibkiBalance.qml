@@ -41,7 +41,7 @@ GridLayout {
 
     Timer {
         id: refreshLibkiBalanceTimer
-        interval: 500
+        interval: 1000
         running: false
         repeat: true
         onTriggered: refreshLibkiBalance()

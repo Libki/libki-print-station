@@ -8,7 +8,7 @@ import QtQuick.Window 2.12
 
 import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
-import QtQuick.Controls 2.5
+import QtQuick.Controls 2.5 as MyControls
 import QtQuick.Controls
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs
@@ -31,11 +31,20 @@ RowLayout {
     //        }
     property double currentJamexMachineBalance: 0
 
-    MessageDialog {
-        id: paymentDialog
-        title: qsTr("Payment confirmed")
-        text: ""
-        modality: Qt.WindowModal
+    // https://doc.qt.io/qt-5/qml-qtquick-controls2-dialog.html
+    MyControls.Dialog {
+        id: paymentWindowMessageDialog
+        modal: true
+        focus: true
+
+        parent: Overlay.overlay
+
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+
+        Text {
+            id: paymentWindowMessageDialogText
+        }
     }
 
     Timer {
@@ -96,31 +105,30 @@ RowLayout {
                 var balanceForLibki = amountToTransferSpinbox.value / 100
                 var amount_to_deduct = balanceForLibki.toFixed(2)
 
-                paymentDialog.text = qsTr("Funds have been transferred!")
-                paymentDialog.visible = true
+                paymentWindowMessageDialogText.text = qsTr("Funds have been transferred!")
 
                 console.log("AMOUNT TO DEDUCT: " + amount_to_deduct)
                 backend.jamexDeductAmount = amount_to_deduct
                 success = backend.jamexDeductAmount
                 if (success === "false") {
                     // Must pass string, not bool
-                    paymentDialog.text = qsTr(
+                    paymentWindowMessageDialogText.text = qsTr(
                                 "Unable to deduct amount from Jamex machine. Please ask staff for help")
-                    paymentDialog.visible = true
                 }
             } else {
                 if (d.error === "INVALID_API_KEY") {
                     mssageDialog.text = qsTr(
                                 "Unable to authenticate. API key is invalid.")
                 } else if (d.error === "INVALID_USER") {
-                    messageDialog.text(qsTr("Unable to find user."))
+                    paymentWindowMessageDialogText.text(qsTr("Unable to find user."))
                 } else {
-                    messageDialog.text = qsTr(
+                    paymentWindowMessageDialogText.text = qsTr(
                                 "Unable to add funds. Error code: ") + d.error
                 }
 
-                messageDialog.visible = true
             }
+
+            paymentWindowMessageDialog.open()
 
             success = backend.jamexReturnBalance
             success = backend.jamexEnableChangeCardReturn

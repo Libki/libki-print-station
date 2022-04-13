@@ -52,7 +52,7 @@ Window {
 
             GroupBox {
                 implicitWidth: mainWindow.width
-                title: qsTr("Add printing funds via Jamex")
+                title: qsTr("1. Add funds via coinbox")
 
                 PaymentWindow {
                     id: paymentWindow
@@ -61,7 +61,7 @@ Window {
 
             GroupBox {
                 implicitWidth: mainWindow.width
-                title: qsTr("Funds available for printing")
+                title: qsTr("2. Funds available for printing")
 
                 LibkiBalance {
                     id: libkiBalance
@@ -70,7 +70,7 @@ Window {
 
             GroupBox {
                 implicitWidth: mainWindow.width
-                title: qsTr("Release print jobs to printer")
+                title: qsTr("3. Release print jobs to printer")
 
                 Layout.minimumWidth: mainWindow.width
                 Layout.minimumHeight: 500

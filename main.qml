@@ -1,6 +1,5 @@
 import Qt.labs.platform
 
-import QtQuick.Window 2.12
 
 import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
@@ -8,6 +7,7 @@ import QtQuick.Controls 2.5 as MyControls
 import QtQuick.Controls
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs
+import QtQuick.Window 2.15
 
 import "functions.js" as Functions
 
@@ -15,11 +15,16 @@ import io.qt.libki_jamex.backend 1.0
 
 Window {
     id: mainWindow
-    width: 1024
-    height: 768
+    width: 1000
+    height: 800
     visible: true
     visibility: backend.mainWindowVisibility
     title: qsTr("Libki Print Station")
+    onClosing: {
+        close.accepted = mainWindow.allowClose
+    }
+
+    property bool allowClose: false
 
     MyControls.Dialog {
         id: messageDialog
@@ -51,8 +56,21 @@ Window {
             spacing: 6
 
             GroupBox {
+                id: paymentGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("1. Add funds via coinbox")
+
+                label: Label {
+                    font.pointSize: 14
+                    x: paymentGroupBox.leftPadding
+                    width: paymentGroupBox.availableWidth
+                    text: paymentGroupBox.title
+                    background: Rectangle {
+                        color: "#EEAE0D"
+                    }
+
+                    elide: Text.ElideRight
+                }
 
                 PaymentWindow {
                     id: paymentWindow
@@ -60,8 +78,21 @@ Window {
             }
 
             GroupBox {
+                id: fundsGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("2. Funds available for printing")
+
+                label: Label {
+                    font.pointSize: 14
+                    x: fundsGroupBox.leftPadding
+                    width: fundsGroupBox.availableWidth
+                    text: fundsGroupBox.title
+                    background: Rectangle {
+                        color: "#EEAE0D"
+                    }
+
+                    elide: Text.ElideRight
+                }
 
                 LibkiBalance {
                     id: libkiBalance
@@ -69,8 +100,21 @@ Window {
             }
 
             GroupBox {
+                id: releaseGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("3. Release print jobs to printer")
+
+                label: Label {
+                    font.pointSize: 14
+                    x: releaseGroupBox.leftPadding
+                    width: releaseGroupBox.availableWidth
+                    text: releaseGroupBox.title
+                    background: Rectangle {
+                        color: "#EEAE0D"
+                    }
+
+                    elide: Text.ElideRight
+                }
 
                 Layout.minimumWidth: mainWindow.width
                 Layout.minimumHeight: 500
@@ -81,10 +125,28 @@ Window {
             }
 
             GroupBox {
+                id: logoutGroupBox
                 implicitWidth: mainWindow.width
+                title: qsTr("4. Log out")
 
-                Button {
+                label: Label {
+                    id: logoutTitle
+                    font.pointSize: 14
+                    x: logoutGroupBox.leftPadding
+                    width: logoutGroupBox.availableWidth
+                    text: logoutGroupBox.title
+                    background: Rectangle {
+                        color: "#EEAE0D"
+                    }
+
+                    elide: Text.ElideRight
+                }
+
+                Row {
+                    topPadding: 10
+               Button {
                     text: qsTr("Log out")
+                    anchors.top: logoutGroupBox.top
                     onClicked: function () {
                         backend.userName = ""
                         backend.userPassword = ""
@@ -103,7 +165,7 @@ Window {
                         success = backend.jamexReturnBalance
                         success = backend.jamexEnableChangeCardReturn
                     }
-                }
+                }}
             }
         }
     }

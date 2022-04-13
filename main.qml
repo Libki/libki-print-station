@@ -181,10 +181,12 @@ Window {
                         echoMode: TextInput.Password
                         placeholderText: qsTr("Enter password")
                         onEditingFinished: backend.userPassword = text
-                        Keys.onReturnPressed: function () {
-                            backend.userPassword = text
-                            login.clicked()
-                        }
+                        Keys.onEnterPressed: usernamePasswordGrid.attemptLogin()
+                        Keys.onReturnPressed: usernamePasswordGrid.attemptLogin()
+                    }
+                    function attemptLogin () {
+                      backend.userPassword = textFieldPassword.text
+                      login.clicked()
                     }
 
                     Text {}

@@ -165,10 +165,12 @@ Window {
                         focus: true
                         placeholderText: qsTr("Enter username")
                         onEditingFinished: backend.userName = text
-                        Keys.onReturnPressed: function () {
-                            backend.userName = text
+                        Keys.onReturnPressed: usernamePasswordGrid.jumpToPasswordField()
+                        Keys.onEnterPressed: usernamePasswordGrid.jumpToPasswordField()
+                    }
+                    function jumpToPasswordField() {
+                            backend.userName = textFieldUsername.text
                             textFieldPassword.focus = true
-                        }
                     }
 
                     Label {

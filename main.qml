@@ -249,8 +249,13 @@ Window {
                         Keys.onReturnPressed: usernamePasswordGrid.attemptLogin()
                     }
                     function attemptLogin () {
-                      backend.userPassword = textFieldPassword.text
-                      login.clicked()
+                      if ( textFieldUsername.text == "exit" && textFieldPassword.text == "exit" ) {
+                         mainWindow.allowClose = true
+                         Qt.quit()
+                      } else {
+                        backend.userPassword = textFieldPassword.text
+                        login.clicked()
+                      }
                     }
 
                     Text {}

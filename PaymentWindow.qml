@@ -205,7 +205,7 @@ RowLayout {
 
         Button {
             id: transferFundsButton
-            text: qsTr("Transfer funds")
+            text: qsTr("Transfer funds to Libki account")
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             onClicked: transferFunds(true)
         }

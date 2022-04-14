@@ -32,9 +32,7 @@ ColumnLayout {
         text: qsTr("Refresh")
         enabled: true
         onClicked: {
-            console.log("XXXXXXXXXXXXXXXXXXXXXXXXXX")
             printJobsModel.refreshPrintJobsTable()
-            console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
         }
     }
 

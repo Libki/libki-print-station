@@ -13,6 +13,7 @@ typedef bool   ( * JpcOpenFunction)        (void * );
 typedef bool   ( * JpcCloseFunction)       (void * );
 typedef bool   ( * JpcOpenPortFunction)    (void * , char *);
 typedef bool   ( * JpcDeductValueFunction) (void *, const double);
+typedef bool   ( * JpcAddValueFunction)    (void *, const double);
 typedef bool   ( * JpcReturnValueFunction) (void *);
 typedef void   ( * JpcSetOptionsFunction)  (void*, const bool, const bool, const bool, const bool);
 typedef int    ( * JpcGetErrorFunction)    (void * );
@@ -31,6 +32,7 @@ class BackEnd : public QObject
     Q_PROPERTY(QString appBackdoorPassword READ appBackdoorPassword)
     Q_PROPERTY(QString jamexBalance READ jamexBalance NOTIFY jamexBalanceChanged)
     Q_PROPERTY(QString jamexDeductAmount READ jamexDeductValueSuccess WRITE jamexDeductValue)
+    Q_PROPERTY(QString jamexAddAmount READ jamexAddValueSuccess WRITE jamexAddValue)
     Q_PROPERTY(bool jamexReturnBalance READ jamexReturnBalance)
     Q_PROPERTY(bool jamexEnableChangeCardReturn READ jamexEnableChangeCardReturn)
     Q_PROPERTY(bool jamexDisableChangeCardReturn READ jamexDisableChangeCardReturn)
@@ -64,6 +66,9 @@ public:
     void jamexDeductValue(const QString &value);
     QString jamexDeductValueSuccess();
 
+    void jamexAddValue(const QString &value);
+    QString jamexAddValueSuccess();
+
 signals:
     void userNameChanged();
     void userPasswordChanged();
@@ -77,6 +82,7 @@ private:
     bool jamexIsConnected;
 
     bool jamexDeductValueSucceeded;
+    bool jamexAddValueSucceeded;
 
     void * jpcHandle;
 
@@ -92,6 +98,7 @@ private:
     JpcGetErrorFunction jpc_get_error_func;
     JpcReadValueFunction jpc_read_value_func;
     JpcDeductValueFunction jpc_deduct_value_func;
+    JpcAddValueFunction jpc_add_value_func;
     JpcReturnValueFunction jpc_return_value_func;
     JpcSetOptionsFunction jpc_set_options_func;
 

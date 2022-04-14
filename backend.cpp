@@ -10,6 +10,7 @@ typedef bool   ( * JpcOpenFunction)        (void * );
 typedef bool   ( * JpcCloseFunction)       (void * );
 typedef bool   ( * JpcOpenPortFunction)    (void * , char *);
 typedef bool   ( * JpcDeductValueFunction) (void *, const double);
+typedef bool   ( * JpcAddValueFunction)    (void *, const double);
 typedef bool   ( * JpcReturnValueFunction) (void *);
 typedef void   ( * JpcSetOptionsFunction)  (void*, const bool, const bool, const bool, const bool);
 typedef int    ( * JpcGetErrorFunction)    (void * );
@@ -38,6 +39,7 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
     jpc_get_error_func = (JpcGetErrorFunction) jamexLib.resolve("jpc_get_error");
     jpc_read_value_func = (JpcReadValueFunction) jamexLib.resolve("jpc_read_value");
     jpc_deduct_value_func = (JpcDeductValueFunction) jamexLib.resolve("jpc_deduct_value");
+    jpc_add_value_func = (JpcAddValueFunction) jamexLib.resolve("jpc_add_value");
     jpc_return_value_func = (JpcReturnValueFunction) jamexLib.resolve("jpc_return_value");
     jpc_set_options_func = (JpcSetOptionsFunction) jamexLib.resolve("jpc_set_options");
 
@@ -116,6 +118,20 @@ void BackEnd::jamexDeductValue( const QString & value ) {
 
 QString BackEnd::jamexDeductValueSuccess() {
     return jamexDeductValueSucceeded ? "true" : "false";
+}
+
+void BackEnd::jamexAddValue( const QString & value ) {
+    qDebug() << "BackEnd::jamexAddValue(" << value << ")";
+
+    jamexAddValueSucceeded = false;
+
+    double amount = value.toDouble();
+
+    jamexAddValueSucceeded = jpc_add_value_func( jpcHandle, amount );
+}
+
+QString BackEnd::jamexAddValueSuccess() {
+    return jamexAddValueSucceeded ? "true" : "false";
 }
 
 QString BackEnd::serverAddress() {

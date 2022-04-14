@@ -1,12 +1,6 @@
 import Qt.labs.platform
 
 import QtQuick 2.12
-import QtQuick.Controls 2.15
-import QtQuick.Dialogs
-import QtQuick.Layouts 1.12
-import QtQuick.Window 2.12
-
-import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Controls 2.5 as MyControls
 import QtQuick.Controls
@@ -20,15 +14,6 @@ import io.qt.libki_jamex.backend 1.0
 RowLayout {
     id: paymentWindow
 
-    //        onVisibilityChanged: function() {
-    //            // Change / card return should always been enabled when this window is shown or hidden
-    //           var success = backend.jamexEnableChangeCardReturn;
-    //            // If this window is hidden, we are back at the login screen and should attempt to return
-    //            // the change or balance in case the user
-    //            if ( ! this.visible ) {
-    //                success = backend.jamexReturnBalance;
-    //            }
-    //        }
     property double currentJamexMachineBalance: 0
 
     // https://doc.qt.io/qt-5/qml-qtquick-controls2-dialog.html
@@ -92,51 +77,56 @@ RowLayout {
             return
         }
 
-        //backend.jamexDisableChangeCardReturn;
-        Functions.request(url, function (o) {
-            // translate response into an object
-            var d = eval('new Object(' + o.responseText + ')')
+        var balanceForLibki = amountToTransferSpinbox.value / 100
+        var amount_to_deduct = balanceForLibki.toFixed(2)
 
-            var success
-            console.log("PAYMENT RESPONSE:")
-            console.log(d)
+        console.log("AMOUNT TO DEDUCT: " + amount_to_deduct)
+        backend.jamexDeductAmount = amount_to_deduct
+        var success
+        success = backend.jamexDeductAmount
+        if (success === "false") {
+            paymentWindowMessageDialogText.text = qsTr(
+                        "Unable to deduct amount from Jamex machine. Please ask staff for help")
 
-            if (d.success) {
-                var balanceForLibki = amountToTransferSpinbox.value / 100
-                var amount_to_deduct = balanceForLibki.toFixed(2)
+            // Return the funds, they did not get applied to their Libki funds balance
+            backend.jamexAddAmount = amount_to_deduct
+            success = backend.jamexAddAmount
+        } else {
 
-                paymentWindowMessageDialogText.text = qsTr("Funds have been transferred!")
+            //backend.jamexDisableChangeCardReturn;
+            Functions.request(url, function (o) {
+                // translate response into an object
+                var d = eval('new Object(' + o.responseText + ')')
 
-                console.log("AMOUNT TO DEDUCT: " + amount_to_deduct)
-                backend.jamexDeductAmount = amount_to_deduct
-                success = backend.jamexDeductAmount
-                if (success === "false") {
-                    // Must pass string, not bool
-                    paymentWindowMessageDialogText.text = qsTr(
-                                "Unable to deduct amount from Jamex machine. Please ask staff for help")
-                }
-            } else {
-                if (d.error === "INVALID_API_KEY") {
-                    mssageDialog.text = qsTr(
-                                "Unable to authenticate. API key is invalid.")
-                } else if (d.error === "INVALID_USER") {
-                    paymentWindowMessageDialogText.text(qsTr("Unable to find user."))
+                console.log("PAYMENT RESPONSE:")
+                console.log(d)
+
+                let messageText
+                if (d.success) {
+                    messageText = qsTr("Funds have been transferred!")
                 } else {
-                    paymentWindowMessageDialogText.text = qsTr(
-                                "Unable to add funds. Error code: ") + d.error
+                    if (d.error === "INVALID_API_KEY") {
+                        messageText = qsTr(
+                                    "Unable to authenticate. API key is invalid.")
+                    } else if (d.error === "INVALID_USER") {
+                        messageText(qsTr("Unable to find user."))
+                    } else {
+                        messageText = qsTr(
+                                    "Unable to add funds. Error code: ") + d.error
+                    }
                 }
 
-            }
+                paymentWindowMessageDialogText.text = messageText
+                paymentWindowMessageDialog.open()
 
-            paymentWindowMessageDialog.open()
+                success = backend.jamexReturnBalance
+                success = backend.jamexEnableChangeCardReturn
 
-            success = backend.jamexReturnBalance
-            success = backend.jamexEnableChangeCardReturn
+                amountToTransferSpinbox.value = 0
 
-            amountToTransferSpinbox.value = 0
-
-            transferFundsButton.enabled = true
-        }, 'POST')
+                transferFundsButton.enabled = true
+            }, 'POST')
+        }
     }
 
     GridLayout {

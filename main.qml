@@ -1,6 +1,5 @@
 import Qt.labs.platform
 
-
 import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Controls 2.5 as MyControls
@@ -20,8 +19,8 @@ Window {
     visible: true
     visibility: backend.mainWindowVisibility
     title: qsTr("Libki Print Station")
-    onClosing: function( close ) {
-        if ( backend.appPreventExit == "yes" ) {
+    onClosing: function (close) {
+        if (backend.appPreventExit == "yes") {
             close.accepted = mainWindow.allowClose
         } else {
             close.accepted = true
@@ -148,28 +147,29 @@ Window {
 
                 Row {
                     topPadding: 10
-               Button {
-                    text: qsTr("Log out")
-                    anchors.top: logoutGroupBox.top
-                    onClicked: function () {
-                        backend.userName = ""
-                        backend.userPassword = ""
+                    Button {
+                        text: qsTr("Log out")
+                        anchors.top: logoutGroupBox.top
+                        onClicked: function () {
+                            backend.userName = ""
+                            backend.userPassword = ""
 
-                        printRelease.unload()
-                        libkiBalance.unload()
+                            printRelease.unload()
+                            libkiBalance.unload()
 
-                        loginScreen.visible = true
-                        actionsScreen.visible = false
+                            loginScreen.visible = true
+                            actionsScreen.visible = false
 
-                        textFieldUsername.clear()
-                        textFieldPassword.clear()
-                        textFieldUsername.focus = true
+                            textFieldUsername.clear()
+                            textFieldPassword.clear()
+                            textFieldUsername.focus = true
 
-                        var success
-                        success = backend.jamexReturnBalance
-                        success = backend.jamexEnableChangeCardReturn
+                            var success
+                            success = backend.jamexReturnBalance
+                            success = backend.jamexEnableChangeCardReturn
+                        }
                     }
-                }}
+                }
             }
         }
     }
@@ -235,8 +235,8 @@ Window {
                         Keys.onEnterPressed: usernamePasswordGrid.jumpToPasswordField()
                     }
                     function jumpToPasswordField() {
-                            backend.userName = textFieldUsername.text
-                            textFieldPassword.focus = true
+                        backend.userName = textFieldUsername.text
+                        textFieldPassword.focus = true
                     }
 
                     Label {
@@ -252,14 +252,15 @@ Window {
                         Keys.onEnterPressed: usernamePasswordGrid.attemptLogin()
                         Keys.onReturnPressed: usernamePasswordGrid.attemptLogin()
                     }
-                    function attemptLogin () {
-                      if ( textFieldUsername.text == backend.appBackdoorUsername && textFieldPassword.text == backend.appBackdoorPassword ) {
-                         mainWindow.allowClose = true
-                         Qt.quit()
-                      } else {
-                        backend.userPassword = textFieldPassword.text
-                        login.clicked()
-                      }
+                    function attemptLogin() {
+                        if (textFieldUsername.text == backend.appBackdoorUsername
+                                && textFieldPassword.text == backend.appBackdoorPassword) {
+                            mainWindow.allowClose = true
+                            Qt.quit()
+                        } else {
+                            backend.userPassword = textFieldPassword.text
+                            login.clicked()
+                        }
                     }
 
                     Text {}

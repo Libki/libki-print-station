@@ -130,17 +130,6 @@ QString BackEnd::serverApiKey() {
     return libkiServerApiKey;
 }
 
-// Valid values are "Windowed", "Maximized", or "FullScreen"
-QString BackEnd::mainWindowVisibility() {
-    QString libkiMainWindowVisibility = settings.value("client/visibility").toString();
-    qDebug() << "CLIENT MAIN WINDOW VISIBILITY: " << libkiMainWindowVisibility;
-    if ( libkiMainWindowVisibility.length() > 0 ) {
-        return libkiMainWindowVisibility;
-    } else {
-        return "Windowed";
-    }
-}
-
 bool BackEnd::jamexReturnBalance() {
     jpc_return_value_func( jpcHandle );
     return true;
@@ -186,4 +175,37 @@ void BackEnd::setUserPassword(const QString & userPassword) {
 
     m_userPassword = userPassword;
     emit userPasswordChanged();
+}
+
+// Valid values are "Windowed", "Maximized", or "FullScreen"
+QString BackEnd::mainWindowVisibility() {
+    QString libkiMainWindowVisibility = settings.value("client/visibility").toString();
+    qDebug() << "CLIENT MAIN WINDOW VISIBILITY: " << libkiMainWindowVisibility;
+    if ( libkiMainWindowVisibility.length() > 0 ) {
+        return libkiMainWindowVisibility;
+    } else {
+        return "Windowed";
+    }
+}
+
+QString BackEnd::appPreventExit() {
+    QString setting = settings.value("client/prevent_exit").toString();
+    qDebug() << "CLIENT APP PREVENT EXIT: " << setting;
+    if ( setting == "yes" ) {
+        return "yes";
+    } else {
+        return "no";
+    }
+}
+
+QString BackEnd::appBackdoorUsername() {
+    QString setting = settings.value("client/backdoor_username").toString();
+    qDebug() << "CLIENT BACKDOOR USERNAME: " << setting;
+    return setting;
+}
+
+QString BackEnd::appBackdoorPassword() {
+    QString setting = settings.value("client/backdoor_password").toString();
+    qDebug() << "CLIENT BACKDOOR PASSWORD: " << setting;
+    return setting;
 }

@@ -20,8 +20,12 @@ Window {
     visible: true
     visibility: backend.mainWindowVisibility
     title: qsTr("Libki Print Station")
-    onClosing: {
-        close.accepted = mainWindow.allowClose
+    onClosing: function( close ) {
+        if ( backend.appPreventExit == "yes" ) {
+            close.accepted = mainWindow.allowClose
+        } else {
+            close.accepted = true
+        }
     }
 
     property bool allowClose: false
@@ -249,7 +253,7 @@ Window {
                         Keys.onReturnPressed: usernamePasswordGrid.attemptLogin()
                     }
                     function attemptLogin () {
-                      if ( textFieldUsername.text == "exit" && textFieldPassword.text == "exit" ) {
+                      if ( textFieldUsername.text == backend.appBackdoorUsername && textFieldPassword.text == backend.appBackdoorPassword ) {
                          mainWindow.allowClose = true
                          Qt.quit()
                       } else {

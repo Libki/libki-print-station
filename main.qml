@@ -27,6 +27,10 @@ Window {
         }
     }
 
+    function balanceChanged(){
+        printRelease.balanceChanged()
+    }
+
     property bool allowClose: false
 
     MyControls.Dialog {

@@ -45,7 +45,11 @@ RowLayout {
 
     function updateJamexBalanceAmount() {
         var jbalance_float = parseFloat(backend.jamexBalance)
+
+        let balance_changed = jbalance_float != currentJamexMachineBalance
+
         currentJamexMachineBalance = jbalance_float
+
         var jbalance = jbalance_float.toFixed(2)
         if (jamexBalanceAmount.text.substring(1) != jbalance) {
             jamexBalanceAmount.text = qsTr("$") + jbalance
@@ -55,11 +59,12 @@ RowLayout {
             var remainder = jbalance - balanceForLibki
             balanceToReturn.text = qsTr("$") + remainder.toFixed(2)
         }
+
+        if ( balance_changed ) mainWindow.balanceChanged()
     }
 
     function deductAmount(amount) {
         let a = amount.toFixed(2)
-        console.log("AMOUNT TO DEDUCT: " + a)
         backend.jamexDeductAmount = a
         const success = backend.jamexDeductAmount
         return success
@@ -84,7 +89,6 @@ RowLayout {
         var balanceForLibki = amountToTransferSpinbox.value / 100
         var amount_to_deduct = balanceForLibki.toFixed(2)
 
-        console.log("AMOUNT TO DEDUCT: " + amount_to_deduct)
         backend.jamexDeductAmount = amount_to_deduct
         var success
         success = backend.jamexDeductAmount

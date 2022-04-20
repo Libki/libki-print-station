@@ -54,11 +54,15 @@ GridLayout {
 
         Functions.request(url, function (o) {
             var data = eval('new Object(' + o.responseText + ')')
-            console.log(data.funds)
 
-        balance = data.funds
-        currentLibkiBalance = parseFloat( balance )
-        libkiBalanceAmount.text = qsTr("$") + currentLibkiBalance.toFixed(2)
+            balance = parseFloat(data.funds)
+            let evaluate_print_buttons = balance != currentLibkiBalance
+            currentLibkiBalance = balance
+            libkiBalanceAmount.text = qsTr("$") + currentLibkiBalance.toFixed(2)
+
+            if ( evaluate_print_buttons ) {
+                mainWindow.balanceChanged()
+            }
         }, 'GET')
     }
 

@@ -51,7 +51,7 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
 }
 
 void BackEnd::jamexConnect() {
-    qDebug() << "JAMEX IS CONNECTED: " << jamexIsConnected;
+    //qDebug() << "JAMEX IS CONNECTED: " << jamexIsConnected;
     if ( ! jamexIsConnected ) {
         if (jpc_get_handle_func) {
             jpcHandle = jpc_get_handle_func();
@@ -101,7 +101,7 @@ QString BackEnd::jamexBalance() {
     jamexConnect();
 
     m_jamexBalance = jpc_read_value_func( jpcHandle );
-    qDebug() << "JAMEX BALANCE: " << QString::number(m_jamexBalance);
+    //qDebug() << "JAMEX BALANCE: " << QString::number(m_jamexBalance);
 
     return QString::number(m_jamexBalance);
 }

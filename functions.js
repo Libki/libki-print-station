@@ -16,9 +16,9 @@ function build_print_preview_url( url, api_key, username, password, print_job_id
     return print_preview_url_template.arg(url).arg(api_key).arg(username).arg(password).arg(print_job_id);
 }
 
-function build_print_release_url( url, api_key, username, password, print_job_id ) {
-    const print_release_url_template = "%1/api/printstation/v1_0/release_print_job/?api_key=%2&username=%3&password=%4&id=%5"
-    return print_release_url_template.arg(url).arg(api_key).arg(username).arg(password).arg(print_job_id);
+function build_print_release_url( url, api_key, username, password, print_job_id, printer ) {
+    const print_release_url_template = "%1/api/printstation/v1_0/release_print_job/?api_key=%2&username=%3&password=%4&id=%5&printer=%6"
+    return print_release_url_template.arg(url).arg(api_key).arg(username).arg(password).arg(print_job_id).arg(printer);
 }
 
 function build_print_cancel_url( url, api_key, username, password, print_job_id ) {

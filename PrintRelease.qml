@@ -22,6 +22,11 @@ ColumnLayout {
         printJobsModel.clear()
     }
 
+    signal balanceChanged
+    onBalanceChanged: function () {
+        printJobsTableView.triggerEvaluateEnabled()
+    }
+
     Text {
         id: printButtonWarning
         text: qsTr('If enough funds are available, printing will start immediately when the "print" button is clicked.')
@@ -36,17 +41,15 @@ ColumnLayout {
         }
     }
 
-    function release_print_job(print_job_id) {
+    function release_print_job(print_job_id, selected_printer) {
         const url = Functions.build_print_release_url(
                       printJobsModel.myServerAddress, printJobsModel.myApiKey,
                       printJobsModel.myUsername, printJobsModel.myPassword,
-                      print_job_id)
-        console.log("RELEASE PRINT JOB URL: " + url)
+                      print_job_id, selected_printer)
 
         Functions.request(url, function (o) {
             // translate response into an object
             var d = eval('new Object(' + o.responseText + ')')
-            console.log("PRINT JOB RELEASE RESPONSE: " + o.responseText)
 
             if (d.success) {
                 popupDialogText.text = qsTr(
@@ -59,8 +62,10 @@ ColumnLayout {
                     popupDialogText.text = qsTr("Unable to find user.")
                 } else if (d.error === "INSUFFICIENT_FUNDS") {
                     popupDialogText.text = qsTr("Insufficient funds.")
-                } else {
+                } else if (d.error) {
                     popupDialogText.text = d.error
+                } else {
+                    popupDialogText.text = qsTr("Unable to connect to server.")
                 }
             }
 
@@ -72,12 +77,30 @@ ColumnLayout {
     TableView {
         id: printJobsTableView
 
+        property var printers
+        property var printJobs
+
+        signal evaluateEnabled(int rowChanged)
+        function triggerEvaluateEnabled(rowChanged) {
+            evaluateEnabled(rowChanged)
+        }
+
         anchors.fill: parent
         topMargin: 20
         columnSpacing: 10
         rowSpacing: 10
         anchors.top: printButtonWarning.bottom
         anchors.topMargin: printButtonWarning.height + refreshPrintJobsTableButton.height + 5
+
+        // Column 4 is "Printer" ComboBox inside a Rectangle,
+        // it's layout doesn't work for some reason
+        // so we need to force its width
+        columnWidthProvider: function (column) {
+            if (column == 4)
+                return 200
+        }
+
+        onWidthChanged: printJobsTableView.forceLayout()
 
         Dialog {
             id: popupDialog
@@ -126,7 +149,83 @@ ColumnLayout {
                 }
             }
             DelegateChoice {
-                column: 5
+                column: 4
+                delegate: Rectangle {
+                    id: printerSelectContainer
+                    property var selectedPrinter: model.display
+                    property var myModel: model
+                    ComboBox {
+                        id: cb
+                        editable: false
+                        width: 200
+                        property var innerModel: printerSelectContainer.myModel
+                        model: {
+                            let options = []
+                            let printers = printJobsTableView.printers
+                            let indexToSelect = 0
+                            let i = 0
+                            for (var p in printers) {
+                                let printer = printers[p]
+                                let public_printer_name = printer["public_printer_name"]
+                                options.push(public_printer_name)
+                                if (printerSelectContainer.selectedPrinter == p) {
+                                    indexToSelect = i
+                                }
+                                i++
+                            }
+
+                            this.currentIndex = indexToSelect
+                            return options
+                        }
+                        onActivated: {
+                            let selected_printer = cb.currentText
+                            let print_jobs_model = printJobsModel
+                            let row = cb.innerModel.row
+                            let modelRow = print_jobs_model.rows[row]
+                            let pages = modelRow.pages
+                            let copies = modelRow.copies
+
+                            let printer_data
+                            let printer
+                            let printers = printJobsTableView.printers
+                            for (var p in printers) {
+                                let a_printer = printers[p]
+                                let public_printer_name = a_printer["public_printer_name"]
+
+                                if (public_printer_name == selected_printer) {
+                                    console.log("MATCH FOUND!")
+                                    printer = p
+                                    printer_data = a_printer
+                                    break
+                                }
+                            }
+
+                            let cost_per_page = printer_data.cost_per_page
+                            let cost = copies * pages * cost_per_page
+
+                            let cost_float = parseFloat(cost)
+
+                            let libki_balance = libkiBalance.currentLibkiBalance
+
+                            let jamex_balance = paymentWindow.currentJamexMachineBalance
+                            if (jamex_balance < 0) // Jamex reports a balance of -1 if not connected
+                                jamex_balance = 0
+
+                            modelRow.printer = p
+                            modelRow.printer_data = printer_data
+                            modelRow.cost = qsTr("$") + cost_float.toFixed(2)
+                            modelRow.cost_float = cost_float
+
+                            let current_index = cb.currentIndex
+                            printJobsModel.setRow(row, modelRow)
+                            cb.currentIndex = current_index
+                            printJobsTableView.triggerEvaluateEnabled(row)
+                        }
+                    }
+                }
+            }
+            DelegateChoice {
+                column: 6
                 delegate: Button {
                     text: "Preview"
                     property var printJobId: model.display
@@ -142,29 +241,60 @@ ColumnLayout {
                 }
             }
             DelegateChoice {
-                column: 6
+                column: 7
                 delegate: Button {
+                    id: printButton
                     text: qsTr("Print")
-                    enabled: libkiBalance.currentLibkiBalance
-                             + paymentWindow.currentJamexMachineBalance
-                             >= printJobsModel.prices[model.display]
+
                     property var printJobId: model.display
+                    property var myModel: model
+
+                    Connections {
+                        // printJobsTableView emits a signal to tell each print button to evaluate if it should be enabled
+                        target: printJobsTableView
+                        onEvaluateEnabled: function (rowChanged) {
+                            let row = printButton.myModel.row
+                            let do_eval = (!rowChanged) || (row == rowChanged)
+
+                            if (do_eval) {
+                                let print_jobs_model_row = printJobsModel.rows[row]
+
+                                let cost_float = print_jobs_model_row.cost_float
+
+                                let libki_balance = libkiBalance.currentLibkiBalance
+
+                                let jamex_balance = paymentWindow.currentJamexMachineBalance
+                                if (jamex_balance < 0) // Jamex reports a balance of -1 if not connected
+                                    jamex_balance = 0
+
+                                let has_funds_to_print = libki_balance + jamex_balance >= cost_float
+                                printButton.enabled = has_funds_to_print
+                            }
+                        }
+                    }
+
                     onClicked: {
-                        console.log("AAA PRINT JOB ID: " + printJobId)
-                        let print_job_cost = printJobsModel.prices[printJobId]
+                        let row = printButton.myModel.row
+                        let print_jobs_model_row = printJobsModel.rows[row]
+
+                        let cost_float = print_jobs_model_row.cost_float
                         let libki_balance = libkiBalance.balance
                         let jamex_balance = paymentWindow.currentJamexMachineBalance
 
-                        if (print_job_cost > libki_balance + jamex_balance) {
+                        if (jamex_balance < 0) // Jamex reports a balance of -1 if not connected
+                            jamex_balance = 0
+
+                        if (cost_float > libki_balance + jamex_balance) {
                             popupDialogText.text = qsTr("Insufficient funds!")
                             popupDialog.open()
                             return
                         }
 
+                        let selected_printer = print_jobs_model_row.printer
+
                         // The current balance isn't enough to pay for the job, we need to transfer some funds first
-                        if (print_job_cost > libki_balance) {
-                            console.log("TRANSFERRING FUNDS FROM JAMEX TO LIBKI FOR PRINT RELEASE")
-                            let funds = print_job_cost - libki_balance
+                        if (cost_float > libki_balance) {
+                            let funds = cost_float - libki_balance
 
                             let username = backend.userName
                             let api_key = backend.serverApiKey
@@ -207,17 +337,17 @@ ColumnLayout {
                                 }
 
                                 success = backend.jamexEnableChangeCardReturn
-                                release_print_job(printJobId)
+                                release_print_job(printJobId, selected_printer )
                             }, 'POST')
                         } else {
-                            release_print_job(printJobId)
+                            release_print_job(printJobId, selected_printer )
                         }
                     }
                 }
             }
 
             DelegateChoice {
-                column: 7
+                column: 8
                 delegate: Button {
                     text: qsTr("Cancel")
                     enabled: true //Should be status == "Held"
@@ -252,8 +382,6 @@ ColumnLayout {
             standardButtons: Dialog.Yes | Dialog.No
 
             onAccepted: {
-                console.log("Ok clicked: " + printJobId)
-
                 const url = Functions.build_print_cancel_url(
                               printJobsModel.myServerAddress,
                               printJobsModel.myApiKey,
@@ -263,7 +391,6 @@ ColumnLayout {
                 Functions.request(url, function (o) {
                     // translate response into an object
                     var d = eval('new Object(' + o.responseText + ')')
-                    console.log("PRINT JOB CANCEL RESPONSE: " + o.responseText)
 
                     if (d.success) {
                         popupDialogText.text = qsTr(
@@ -305,6 +432,9 @@ ColumnLayout {
                 display: "created_on"
             }
             TableModelColumn {
+                display: "printer"
+            }
+            TableModelColumn {
                 display: "cost"
             }
             TableModelColumn {
@@ -325,10 +455,9 @@ ColumnLayout {
                 "print_job_id": "",
                 "cancel_print_job_id": "",
                 "created_on": qsTr("Created on"),
+                "printer": qsTr("Printer"),
                 "cost": qsTr("Cost")
             }
-
-            property var prices: ({})
 
             property string urlTemplate: "%1/api/printstation/v1_0/print_jobs?api_key=%2&username=%3&password=%4"
 
@@ -353,7 +482,6 @@ ColumnLayout {
                 var xhr = new XMLHttpRequest
                 var url = urlTemplate.arg(myServerAddress).arg(myApiKey).arg(
                             myUsername).arg(myPassword)
-                console.log("URL: " + url)
                 xhr.open("GET", url)
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -361,32 +489,48 @@ ColumnLayout {
 
                         printJobsModel.clear()
                         printJobsModel.appendRow(headerRow)
-                        for (var i in data) {
-                            let copies = data[i].copies
-                            let cost = data[i].cost
-                            let created_on = data[i].created_on
-                            let pages = data[i].pages
-                            let print_file_id = data[i].print_file_id
-                            let print_job_id = data[i].print_job_id
 
-                            prices[print_job_id] = cost
+                        let print_jobs = data["print_jobs"]
+                        printJobsTableView.printJobs = print_jobs
 
-                            console.log("COPIES: " + copies)
-                            console.log("COST: " + cost)
-                            console.log("CREATED ON: " + created_on)
-                            console.log("PAGES: " + pages)
-                            console.log("PRINT FILE ID: " + print_file_id)
-                            console.log("PRINT JOG ID: " + print_job_id)
+                        let printers = data["printers"]
+                        printJobsTableView.printers = printers
+
+                        for (var i in print_jobs) {
+                            let copies = print_jobs[i].copies
+                            let created_on = print_jobs[i].created_on
+                            let pages = print_jobs[i].pages
+                            let print_file_id = print_jobs[i].print_file_id
+                            let print_job_id = print_jobs[i].print_job_id
+                            let printer = print_jobs[i].printer
+                            let print_job = print_jobs[i]
+                            let printer_data = printers[printer]
+                            let cost_per_page = parseFloat(
+                                    printer_data['cost_per_page'])
+                            let cost_float = copies * pages * cost_per_page
+                            let cost = cost_float.toFixed(2)
+
+                            let libki_balance = libkiBalance.currentLibkiBalance
+
+                            let jamex_balance = paymentWindow.currentJamexMachineBalance
+                            if (jamex_balance < 0) // Jamex reports a balance of -1 if not connected
+                                jamex_balance = 0
 
                             let row_data = {
                                 "id": print_job_id,
                                 "copies": copies,
+                                "pages": pages,
+                                "cost_per_page": cost_per_page,
                                 "print_file_id": print_file_id,
                                 "pages": pages,
                                 "print_job_id": print_job_id,
                                 "cancel_print_job_id": print_job_id,
                                 "created_on": created_on,
-                                "cost": qsTr("$") + parseFloat(cost).toFixed(2)
+                                "printer": printer,
+                                "cost": qsTr("$") + cost,
+                                "cost_float": cost_float,
+                                "print_job": print_jobs[i],
+                                "printers": printers
                             }
                             printJobsModel.appendRow(row_data)
                         }

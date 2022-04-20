@@ -32,6 +32,10 @@ RowLayout {
         }
     }
 
+    onVisibleChanged: function() {
+        transferFundsButton.enabled
+    }
+
     Timer {
         interval: 1000
         running: true
@@ -75,6 +79,8 @@ RowLayout {
             return
         }
 
+        transferFundsButton.enabled = false
+
         var balanceForLibki = amountToTransferSpinbox.value / 100
         var amount_to_deduct = balanceForLibki.toFixed(2)
 
@@ -85,15 +91,13 @@ RowLayout {
         if (success === "false") {
             paymentWindowMessageDialogText.text = qsTr(
                         "Unable to deduct amount from coinbox. Please ask staff for help")
+            transferFundsButton.enabled = true
         } else {
 
             //backend.jamexDisableChangeCardReturn;
             Functions.request(url, function (o) {
                 // translate response into an object
                 var d = eval('new Object(' + o.responseText + ')')
-
-                console.log("PAYMENT RESPONSE:")
-                console.log(d)
 
                 let messageText
                 if (d.success) {
@@ -103,12 +107,12 @@ RowLayout {
                         messageText = qsTr(
                                     "Unable to authenticate. API key is invalid.")
                     } else if (d.error === "INVALID_USER") {
-                        messageText(qsTr("Unable to find user."))
-                    } else if ( d.error ) {
+                        messageText = qsTr("Unable to find user.")
+                    } else if ( d && d.error ) {
                         messageText = qsTr(
                                     "Unable to add funds. Error code: ") + d.error
                     } else {
-                        messageText(qsTr("Unable to connect to server."))
+                        messageText = qsTr("Unable to connect to server.")
                     }
 
                     // Return the funds, they did not get applied to their Libki funds balance
@@ -117,6 +121,7 @@ RowLayout {
                 }
 
                 amountToTransferSpinbox.value = 0
+                transferFundsButton.enabled = true
 
                 paymentWindowMessageDialogText.text = messageText
                 paymentWindowMessageDialog.open()

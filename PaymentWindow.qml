@@ -62,7 +62,6 @@ RowLayout {
     }
 
     function transferFunds() {
-        transferFundsButton.enabled = false
         var username = backend.userName
         var funds = amountToTransferSpinbox.value / 100
         var api_key = backend.serverApiKey
@@ -73,7 +72,6 @@ RowLayout {
                                                      username, funds)
 
         if (amountToTransferSpinbox.value == 0) {
-            transferFundsButton.enabled = true
             return
         }
 
@@ -123,8 +121,6 @@ RowLayout {
                 success = backend.jamexEnableChangeCardReturn
 
                 amountToTransferSpinbox.value = 0
-
-                transferFundsButton.enabled = true
             }, 'POST')
         }
     }

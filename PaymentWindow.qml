@@ -84,11 +84,7 @@ RowLayout {
         success = backend.jamexDeductAmount
         if (success === "false") {
             paymentWindowMessageDialogText.text = qsTr(
-                        "Unable to deduct amount from Jamex machine. Please ask staff for help")
-
-            // Return the funds, they did not get applied to their Libki funds balance
-            backend.jamexAddAmount = amount_to_deduct
-            success = backend.jamexAddAmount
+                        "Unable to deduct amount from coinbox. Please ask staff for help")
         } else {
 
             //backend.jamexDisableChangeCardReturn;
@@ -108,19 +104,25 @@ RowLayout {
                                     "Unable to authenticate. API key is invalid.")
                     } else if (d.error === "INVALID_USER") {
                         messageText(qsTr("Unable to find user."))
-                    } else {
+                    } else if ( d.error ) {
                         messageText = qsTr(
                                     "Unable to add funds. Error code: ") + d.error
+                    } else {
+                        messageText(qsTr("Unable to connect to server."))
                     }
+
+                    // Return the funds, they did not get applied to their Libki funds balance
+                    backend.jamexAddAmount = amount_to_deduct //FIXME:
+                    success = backend.jamexAddAmount
                 }
+
+                amountToTransferSpinbox.value = 0
 
                 paymentWindowMessageDialogText.text = messageText
                 paymentWindowMessageDialog.open()
 
                 success = backend.jamexReturnBalance
                 success = backend.jamexEnableChangeCardReturn
-
-                amountToTransferSpinbox.value = 0
             }, 'POST')
         }
     }

@@ -100,7 +100,9 @@ RowLayout {
         } else {
 
             //backend.jamexDisableChangeCardReturn;
+            waitDialog.open()
             Functions.request(url, function (o) {
+                waitDialog.close()
                 // translate response into an object
                 var d = eval('new Object(' + o.responseText + ')')
 

@@ -1,7 +1,8 @@
+import Qt.labs.platform
 import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Controls 2.5
-import QtQuick.Controls
+import QtQuick.Controls as MyControls
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs
 
@@ -47,7 +48,9 @@ ColumnLayout {
                       printJobsModel.myUsername, printJobsModel.myPassword,
                       print_job_id, selected_printer)
 
+        waitDialog.open()
         Functions.request(url, function (o) {
+            waitDialog.close()
             // translate response into an object
             var d = eval('new Object(' + o.responseText + ')')
 
@@ -102,7 +105,7 @@ ColumnLayout {
 
         onWidthChanged: printJobsTableView.forceLayout()
 
-        Dialog {
+        MyControls.Dialog {
             id: popupDialog
             title: qsTr("Job printed")
             modal: true
@@ -112,7 +115,7 @@ ColumnLayout {
 
             x: Math.round((parent.width - width) / 2)
             y: Math.round((parent.height - height) / 3)
-            standardButtons: Dialog.Ok
+            standardButtons: MyControls.Dialog.Ok
 
             Text {
                 id: popupDialogText
@@ -120,14 +123,14 @@ ColumnLayout {
             }
         }
 
-        Dialog {
+        MyControls.Dialog {
             id: dialog
             title: qsTr("Print preview")
             modal: true
             visible: false
             width: parent.width
             height: parent.height
-            standardButtons: Dialog.Ok
+            standardButtons: MyControls.Dialog.Ok
             property var dialogPrintJobId
             contentItem: Item {
                 Image {
@@ -315,7 +318,9 @@ ColumnLayout {
                                 popupDialog.open()
                                 success = backend.jamexEnableChangeCardReturn
                             } else {
+                                waitDialog.open();
                                 Functions.request(url, function (o) {
+                                    waitDialog.close();
                                     // translate response into an object
                                     var d = eval('new Object(' + o.responseText + ')')
 
@@ -343,9 +348,9 @@ ColumnLayout {
                                         success = backend.jamexAddAmount
 
                                         success = backend.jamexEnableChangeCardReturn
-
-                                        popupDialog.open()
                                     }
+
+                                    popupDialog.open()
 
                                     success = backend.jamexEnableChangeCardReturn
 
@@ -356,6 +361,7 @@ ColumnLayout {
                                 }, 'POST')
                             }
                         } else {
+                            waitDialog.close()
                             release_print_job(printJobId, selected_printer)
                         }
                     }
@@ -383,7 +389,7 @@ ColumnLayout {
             }
         }
 
-        Dialog {
+        MyControls.Dialog {
             id: confirmCancelDialog
             title: qsTr("Cancel print job?")
             modal: true
@@ -395,7 +401,7 @@ ColumnLayout {
 
             x: Math.round((parent.width - width) / 2)
             y: Math.round((parent.height - height) / 3)
-            standardButtons: Dialog.Yes | Dialog.No
+            standardButtons: MyControls.Dialog.Yes | MyControls.Dialog.No
 
             onAccepted: {
                 const url = Functions.build_print_cancel_url(
@@ -404,7 +410,9 @@ ColumnLayout {
                               printJobsModel.myUsername,
                               printJobsModel.myPassword, printJobId)
 
+                waitDialog.open()
                 Functions.request(url, function (o) {
+                    waitDialog.close()
                     // translate response into an object
                     var d = eval('new Object(' + o.responseText + ')')
 
@@ -417,8 +425,10 @@ ColumnLayout {
                                         "Unable to authenticate. API key is invalid.")
                         } else if (d.error === "INVALID_USER") {
                             popupDialogText.text = qsTr("Unable to find user.")
-                        } else {
+                        } else if ( d.error ) {
                             popupDialogText.text = d.error
+                        } else {
+                            popupDialogText.text = qsTr("Unable to connect to server.")
                         }
                     }
 
@@ -501,6 +511,7 @@ ColumnLayout {
                 xhr.open("GET", url)
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if ( ! xhr.responseText ) return
                         let data = JSON.parse(xhr.responseText)
 
                         printJobsModel.clear()

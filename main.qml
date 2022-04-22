@@ -40,6 +40,14 @@ Window {
         text: qsTr("Unable to log in")
     }
 
+    MessageDialog {
+        id: waitDialog
+        modality: Qt.ApplicationModal
+        buttons: MessageDialog.NoButton
+        text: qsTr("Processing...")
+    }
+
+
     BackEnd {
         id: backend
     }
@@ -276,7 +284,9 @@ Window {
                             var url = server_address + path + "?api_key=" + api_key
                                     + "&username=" + username + "&password=" + password
                             console.log("AUTHENTICATION URL: " + url)
+                            waitDialog.open()
                             Functions.request(url, function (o) {
+                                waitDialog.close()
                                 // log the json response
                                 console.log(o.responseText)
                                 // translate response into object

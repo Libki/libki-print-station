@@ -38,6 +38,7 @@ Window {
         title: qsTr("Unable to log in")
         modal: true
         focus: true
+        standardButtons: MyControls.Dialog.Ok
 
         parent: Overlay.overlay
 

@@ -208,7 +208,8 @@ ColumnLayout {
                             let libki_balance = libkiBalance.currentLibkiBalance
 
                             let jamex_balance = paymentWindow.currentJamexMachineBalance
-                            if (jamex_balance < 0) // Jamex reports a balance of -1 if not connected
+                            if (jamex_balance < 0)
+                                // Jamex reports a balance of -1 if not connected
                                 jamex_balance = 0
 
                             modelRow.printer = p
@@ -264,7 +265,8 @@ ColumnLayout {
                                 let libki_balance = libkiBalance.currentLibkiBalance
 
                                 let jamex_balance = paymentWindow.currentJamexMachineBalance
-                                if (jamex_balance < 0) // Jamex reports a balance of -1 if not connected
+                                if (jamex_balance < 0)
+                                    // Jamex reports a balance of -1 if not connected
                                     jamex_balance = 0
 
                                 let has_funds_to_print = libki_balance + jamex_balance >= cost_float
@@ -281,7 +283,8 @@ ColumnLayout {
                         let libki_balance = libkiBalance.balance
                         let jamex_balance = paymentWindow.currentJamexMachineBalance
 
-                        if (jamex_balance < 0) // Jamex reports a balance of -1 if not connected
+                        if (jamex_balance < 0)
+                            // Jamex reports a balance of -1 if not connected
                             jamex_balance = 0
 
                         if (cost_float > libki_balance + jamex_balance) {
@@ -294,57 +297,65 @@ ColumnLayout {
 
                         // The current balance isn't enough to pay for the job, we need to transfer some funds first
                         if (cost_float > libki_balance) {
-                            let funds = cost_float - libki_balance
+                            let additional_funds_needed = cost_float - libki_balance
 
                             let username = backend.userName
                             let api_key = backend.serverApiKey
                             let server_address = backend.serverAddress
                             let url = Functions.build_add_user_funds_url(
-                                    server_address, api_key, username, funds)
+                                    server_address, api_key, username, additional_funds_needed)
 
-                            //FIXME: This needs the same fix as was done on paymentWindow
-                            //       Reverse the operations. Deduct from Jamex, if if that's successful
-                            //       Call the Libki Server API to add funds to Libki server, then
-                            //       If the API call fails, put the money back on the Jamex machine balance
                             //backend.jamexDisableChangeCardReturn;
-                            Functions.request(url, function (o) {
-                                // translate response into an object
-                                var d = eval('new Object(' + o.responseText + ')')
+                            let success = paymentWindow.deductAmount(additional_funds_needed)
 
-                                var success
-                                if (d.success) {
-                                    success = paymentWindow.deductAmount(funds)
-
-                                    if (success === "false") {
-                                        popupDialogText.text = qsTr(
-                                                    "Unable to deduct amount from Jamex machine. Please ask staff for help")
-                                        popupDialog.open()
-                                        success = backend.jamexEnableChangeCardReturn
-                                        return
-                                    }
-                                } else {
-                                    if (d.error === "INVALID_API_KEY") {
-                                        popupDialogText.text = qsTr(
-                                                    "Unable to authenticate. API key is invalid.")
-                                    } else if (d.error === "INVALID_USER") {
-                                        popupDialogText.text(
-                                                    qsTr(
-                                                        "Unable to find user."))
-                                    } else {
-                                        popupDialogText.text = qsTr(
-                                                    "Unable to add funds. Error code: ") + d.error
-                                    }
-
-                                    popupDialog.open()
-                                    success = backend.jamexEnableChangeCardReturn
-                                    return
-                                }
-
+                            if (success === "false") {
+                                popupDialogText.text = qsTr(
+                                            "Unable to deduct amount from Jamex machine. Please ask staff for help")
+                                popupDialog.open()
                                 success = backend.jamexEnableChangeCardReturn
-                                release_print_job(printJobId, selected_printer )
-                            }, 'POST')
+                            } else {
+                                Functions.request(url, function (o) {
+                                    // translate response into an object
+                                    var d = eval('new Object(' + o.responseText + ')')
+
+                                    if (d.success) {
+                                        popupDialogText.text = qsTr(
+                                                    "Funds have been transferred, print job released!")
+                                    } else {
+                                        if (d.error === "INVALID_API_KEY") {
+                                            popupDialogText.text = qsTr(
+                                                        "Unable to authenticate. API key is invalid.")
+                                        } else if (d.error === "INVALID_USER") {
+                                            popupDialogText.text(
+                                                        qsTr("Unable to find user."))
+                                        } else if (d.error) {
+                                            popupDialogText.text = qsTr(
+                                                        "Unable to add funds. Error code: ")
+                                                    + d.error
+                                        } else {
+                                            popupDialogText.text = qsTr(
+                                                        "Unable to connect to server.")
+                                        }
+
+                                        // Return the funds, they did not get applied to their Libki funds balance
+                                        backend.jamexAddAmount = additional_funds_needed
+                                        success = backend.jamexAddAmount
+
+                                        success = backend.jamexEnableChangeCardReturn
+
+                                        popupDialog.open()
+                                    }
+
+                                    success = backend.jamexEnableChangeCardReturn
+
+                                    if (d.success) {
+                                        release_print_job(printJobId,
+                                                          selected_printer)
+                                    }
+                                }, 'POST')
+                            }
                         } else {
-                            release_print_job(printJobId, selected_printer )
+                            release_print_job(printJobId, selected_printer)
                         }
                     }
                 }
@@ -517,7 +528,8 @@ ColumnLayout {
                             let libki_balance = libkiBalance.currentLibkiBalance
 
                             let jamex_balance = paymentWindow.currentJamexMachineBalance
-                            if (jamex_balance < 0) // Jamex reports a balance of -1 if not connected
+                            if (jamex_balance < 0)
+                                // Jamex reports a balance of -1 if not connected
                                 jamex_balance = 0
 
                             let row_data = {

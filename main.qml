@@ -316,10 +316,12 @@ Window {
                                                || d.error == "BAD_LOGIN") {
                                         messageDialogText.text = qsTr(
                                                     "Username & password do not match.")
-                                    } else {
+                                    } else if ( d.error ) {
                                         messageDialogText.text = qsTr(
                                                     "Unable to authenticate. Error code: ")
                                                 + d.error
+                                    } else {
+                                        messageDialogText.text = qsTr("Unable to connect to server.")
                                     }
 
                                     textFieldUsername.text = ""

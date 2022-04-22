@@ -302,6 +302,10 @@ ColumnLayout {
                             let url = Functions.build_add_user_funds_url(
                                     server_address, api_key, username, funds)
 
+                            //FIXME: This needs the same fix as was done on paymentWindow
+                            //       Reverse the operations. Deduct from Jamex, if if that's successful
+                            //       Call the Libki Server API to add funds to Libki server, then
+                            //       If the API call fails, put the money back on the Jamex machine balance
                             //backend.jamexDisableChangeCardReturn;
                             Functions.request(url, function (o) {
                                 // translate response into an object

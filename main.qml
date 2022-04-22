@@ -5,8 +5,8 @@ import Qt.labs.qmlmodels 1.0
 import QtQuick.Controls 2.5 as MyControls
 import QtQuick.Controls
 import QtQuick.Layouts 1.12
-import QtQuick.Dialogs
 import QtQuick.Window 2.15
+import QtQuick.Dialogs 6.2
 
 import "functions.js" as Functions
 
@@ -33,22 +33,11 @@ Window {
 
     property bool allowClose: false
 
-    // https://doc.qt.io/qt-5/qml-qtquick-controls2-dialog.html
-    MyControls.Dialog {
+    // https://doc.qt.io/qt-6/qml-qtquick-dialogs-messagedialog.html
+    MessageDialog {
         id: messageDialog
-        title: qsTr("Unable to log in")
-        modal: true
-        focus: true
-        standardButtons: MyControls.Dialog.Ok
-
-        parent: Overlay.overlay
-
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 3)
-
-        Text {
-            id: messageDialogText
-        }
+        buttons: MessageDialog.Ok
+        text: qsTr("Unable to log in")
     }
 
     BackEnd {
@@ -302,28 +291,28 @@ Window {
                                                       api_key, server_address)
                                 } else {
                                     if (d.error === "SIP_ACS_OFFLINE") {
-                                        messageDialogText.text = qsTr(
+                                        messageDialog.text = qsTr(
                                                     "Unable to authenticate. ILS is offline for SIP.")
                                     } else if (d.error === "SIP_AUTH_FAILURE") {
-                                        messageDialogText.text = qsTr(
+                                        messageDialog.text = qsTr(
                                                     "Unable to authenticate. ILS login for SIP failed.")
                                     } else if (d.error === "INVALID_API_KEY") {
-                                        messageDialogText.text = qsTr(
+                                        messageDialog.text = qsTr(
                                                     "Unable to authenticate. API key is invalid.")
                                     } else if (d.error === "FEE_LIMIT") {
-                                        messageDialogText.text(
+                                        messageDialog.text(
                                                     "Unable to log in, you own too many fees.")
                                     } else if (d.error === "INVALID_USER"
                                                || d.error == "INVALID_PASSWORD"
                                                || d.error == "BAD_LOGIN") {
-                                        messageDialogText.text = qsTr(
+                                        messageDialog.text = qsTr(
                                                     "Username & password do not match.")
                                     } else if ( d.error ) {
-                                        messageDialogText.text = qsTr(
+                                        messageDialog.text = qsTr(
                                                     "Unable to authenticate. Error code: ")
                                                 + d.error
                                     } else {
-                                        messageDialogText.text = qsTr("Unable to connect to server.")
+                                        messageDialog.text = qsTr("Unable to connect to server.")
                                     }
 
                                     textFieldUsername.text = ""

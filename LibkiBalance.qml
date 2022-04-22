@@ -60,7 +60,7 @@ GridLayout {
             currentLibkiBalance = balance
             libkiBalanceAmount.text = qsTr("$") + currentLibkiBalance.toFixed(2)
 
-            if ( evaluate_print_buttons ) {
+            if (evaluate_print_buttons) {
                 mainWindow.balanceChanged()
             }
         }, 'GET')

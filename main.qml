@@ -27,7 +27,7 @@ Window {
         }
     }
 
-    function balanceChanged(){
+    function balanceChanged() {
         printRelease.balanceChanged()
     }
 
@@ -254,7 +254,8 @@ Window {
                         placeholderText: qsTr("Enter password")
                         onEditingFinished: backend.userPassword = text
                         Keys.onEnterPressed: usernamePasswordGrid.attemptLogin()
-                        Keys.onReturnPressed: usernamePasswordGrid.attemptLogin()
+                        Keys.onReturnPressed: usernamePasswordGrid.attemptLogin(
+                                                  )
                     }
                     function attemptLogin() {
                         if (textFieldUsername.text == backend.appBackdoorUsername

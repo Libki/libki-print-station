@@ -21,6 +21,7 @@ RowLayout {
         id: paymentWindowMessageDialog
         modal: true
         focus: true
+        standardButtons: MyControls.Dialog.Ok
 
         parent: Overlay.overlay
 

@@ -33,6 +33,7 @@ Window {
 
     property bool allowClose: false
 
+    // https://doc.qt.io/qt-5/qml-qtquick-controls2-dialog.html
     MyControls.Dialog {
         id: messageDialog
         title: qsTr("Unable to log in")

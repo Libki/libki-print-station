@@ -246,6 +246,7 @@ ColumnLayout {
                 delegate: Button {
                     id: printButton
                     text: qsTr("Print")
+                    enabled: false
 
                     property var printJobId: model.display
                     property var myModel: model

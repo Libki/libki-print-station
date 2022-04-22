@@ -33,7 +33,7 @@ GridLayout {
         username = ""
         password = ""
 
-        balance = "0.00"
+        balance = ""
         libkiBalanceAmount.text = ""
 
         refreshLibkiBalanceTimer.running = false
@@ -55,12 +55,13 @@ GridLayout {
         Functions.request(url, function (o) {
             var data = eval('new Object(' + o.responseText + ')')
 
+            let first_check = balance === "";
             balance = parseFloat(data.funds)
             let evaluate_print_buttons = balance != currentLibkiBalance
             currentLibkiBalance = balance
             libkiBalanceAmount.text = qsTr("$") + currentLibkiBalance.toFixed(2)
 
-            if (evaluate_print_buttons) {
+            if (first_check || evaluate_print_buttons) {
                 mainWindow.balanceChanged()
             }
         }, 'GET')

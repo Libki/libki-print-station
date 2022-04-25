@@ -41,10 +41,23 @@ Window {
     }
 
     MessageDialog {
-        id: waitDialog
         modality: Qt.ApplicationModal
         buttons: MessageDialog.NoButton
         text: qsTr("Processing, please wait...")
+        BusyIndicator {
+            running: image.status === Image.Loading
+        }
+    }
+    Popup {
+        id: waitDialog
+        modal: true
+        focus: true
+        closePolicy: Popup.NoAutoClose
+        anchors.centerIn: Overlay.overlay
+
+        BusyIndicator {
+            running: true
+        }
     }
 
 

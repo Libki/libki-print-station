@@ -44,7 +44,7 @@ Window {
         id: waitDialog
         modality: Qt.ApplicationModal
         buttons: MessageDialog.NoButton
-        text: qsTr("Processing...")
+        text: qsTr("Processing, please wait...")
     }
 
 

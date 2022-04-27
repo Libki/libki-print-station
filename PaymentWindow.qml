@@ -190,6 +190,16 @@ RowLayout {
                 var remainder = jamexBalance - balanceForLibki
                 balanceToReturn.text = qsTr("$") + remainder.toFixed(2)
             }
+
+            Keys.onEnterPressed: {
+                amountToTransferSpinbox.valueModified()
+                transferFundsButton.clicked()
+            }
+
+            Keys.onReturnPressed: {
+                amountToTransferSpinbox.valueModified()
+                transferFundsButton.clicked()
+            }
         }
 
         Text {

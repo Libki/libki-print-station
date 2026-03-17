@@ -14,6 +14,12 @@ int main(int argc, char *argv[])
 
     LogUtils::initLogging();
 
+    /* Apply the stylesheet */
+    QFile qss("libkiprintstation.qss");
+    qss.open(QFile::ReadOnly);
+    app.setStyleSheet(qss.readAll());
+    qss.close();
+
     QCoreApplication::setOrganizationName("Libki");
     QCoreApplication::setOrganizationDomain("libki.org");
     QCoreApplication::setApplicationName("Libki Print Station");

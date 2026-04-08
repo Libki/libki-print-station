@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QSettings>
+#include <QQuickStyle>
+#include <QFont>
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +16,8 @@ int main(int argc, char *argv[])
 
     LogUtils::initLogging();
 
+    QQuickStyle::setStyle("Basic");
+
     QCoreApplication::setOrganizationName("Libki");
     QCoreApplication::setOrganizationDomain("libki.org");
     QCoreApplication::setApplicationName("Libki Print Station");
@@ -21,6 +25,9 @@ int main(int argc, char *argv[])
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings settings;
 //  settings.setIniCodec("UTF-8");
+
+    QFont _font(settings.value("font/font_family","Arial").toString(), settings.value("font/font_size",14).toInt());
+    app.setFont(_font);
 
     QQmlApplicationEngine engine("qrc:/main.qml");
     return app.exec();

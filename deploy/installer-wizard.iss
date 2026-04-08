@@ -37,8 +37,10 @@ AssocFileExtension=&Associate %1 with the %2 file extension
 AssocingFileExtension=Associating %1 with the %2 file extension...
 
 [INI]
-Filename: "{commonappdata}\Libki\Libki Jamex Payment Processor.ini"; Section: "server"; Key: "address"; String: "{code:GetAddress}"
-Filename: "{commonappdata}\Libki\Libki Jamex Payment Processor.ini"; Section: "server"; Key: "api_key"; String: "{code:GetApiKey}"
+Filename: "{commonappdata}\Libki\Libki Print Station.ini"; Section: "server"; Key: "address"; String: "{code:GetAddress}"
+Filename: "{commonappdata}\Libki\Libki Print Station.ini"; Section: "server"; Key: "api_key"; String: "{code:GetApiKey}"
+Filename: "{commonappdata}\Libki\Libki Print Station.ini"; Section: "font"; Key: "font_family"; String: "Arial"
+Filename: "{commonappdata}\Libki\Libki Print Station.ini"; Section: "font"; Key: "font_size"; String: "14"
 
 [Code]
 var

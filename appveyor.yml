@@ -17,7 +17,7 @@ install:
 
 build_script:
   - dir C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin
-  - qmake6.exe LibkiPrintStation.pro
+  - C:\Qt\6.9.3\mingw_64\bin\qmake6 LibkiPrintStation.pro
   - mingw32-make
   - dir release
   - copy release\LibkiPrintStation.exe deploy\windows\LibkiPrintStation.exe

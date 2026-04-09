@@ -17,12 +17,17 @@ install:
   - copy "%QTDIR%\libstdc++-6.dll" %QTDIR%\bin\
   - copy "%QTDIR%\libgcc*" %QTDIR%\bin\
 
+<<<<<<< HEAD
 init:
   - ps: $blockRdp = $false; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 build_script:
   - qmake6 LibkiPrintStation.pro
   - type Makefile.Release
+=======
+build_script:
+  - qmake6 LibkiPrintStation.pro
+>>>>>>> 59ebb0d (Add appveyor.yml and add edits to make builds run more smoothly)
   - mingw32-make
   - dir release
   - copy release\LibkiPrintStation.exe deploy\windows\LibkiPrintStation.exe

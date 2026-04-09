@@ -79,6 +79,8 @@ ColumnLayout {
 
     TableView {
         id: printJobsTableView
+        Layout.fillWidth: true
+        Layout.fillHeight: true
 
         property var printers
         property var printJobs

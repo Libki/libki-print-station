@@ -16,9 +16,7 @@ install:
   - set PATH=%PATH%;C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\bin;%QTDIR%\bin;"C:\\Program Files (x86)\\Inno Setup 6"
 
 build_script:
-  - dir C:\Qt\6.9.3\mingw_64\bin
-  - dir C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0
-  - dir C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\bin
+  - dir C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32
   - qmake LibkiPrintStation.pro
   - mingw32-make
   - dir release

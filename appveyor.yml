@@ -17,7 +17,7 @@ install:
 
 build_script:
   - dir %QTDIR%\bin
-  - qmake -v
+  - %QTDIR%\bin\qmake6.exe -v
   - qmake LibkiPrintStation.pro
   - mingw32-make
   - dir release

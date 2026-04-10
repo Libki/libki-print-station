@@ -13,9 +13,10 @@ branches:
 # scripts that run after cloning repository
 install:
   - set QTDIR=C:\Qt\6.9.3\mingw_64
-  - set PATH=%PATH%;C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%QTDIR%\bin;%QTDIR%\include;"C:\\Program Files (x86)\\Inno Setup 6"
+  - set PATH=%PATH%;C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%QTDIR%\bin;%QTDIR%\lib;"C:\\Program Files (x86)\\Inno Setup 6"
 
 build_script:
+  - dir "C:\Windows\System32"
   - qmake6 -v
   - qmake6 LibkiPrintStation.pro
   - mingw32-make

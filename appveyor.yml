@@ -16,8 +16,8 @@ install:
   - set PATH=%PATH%;C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%QTDIR%\bin;"C:\\Program Files (x86)\\Inno Setup 6";"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64";"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64";"C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um";"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\atlmfc\\include"
 
 build_script:
-  - dir "C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\x86_64-w64-mingw32"
-  - dir "C:\Qt\6.9.3\mingw_64"
+  - dir "C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\x86_64-w64-mingw32\bin"
+  - dir "C:\Qt\6.9.3\mingw_64\bin"
   - qmake6 LibkiPrintStation.pro
   - mingw32-make
   - dir release

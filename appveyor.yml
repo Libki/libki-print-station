@@ -16,7 +16,7 @@ install:
   - set PATH=%PATH%;C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%QTDIR%\bin;%QTDIR%\lib;"C:\\Program Files (x86)\\Inno Setup 6"
 
 environment:
-  APPVEYOR_RDP_PASSWORD: lps0410
+  APPVEYOR_RDP_PASSWORD: Lps0410!
 
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

@@ -1,6 +1,6 @@
 IDI_ICON1               ICON    DISCARDABLE     "libki_print.ico"
 
-#include <windows.h>
+#include <Windows.h>
 
 VS_VERSION_INFO     VERSIONINFO
 FILEVERSION         0, 1, 3, 0

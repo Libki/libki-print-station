@@ -27,14 +27,14 @@ build_script:
 
 # defines what we can export from the build environment
 artifacts:
-  - path: 'deploy\Output\LibkiPrintStation.exe'
+  - path: 'deploy\Output\Libki_Print_Station_Installer.exe'
     name: 'Libki Print Station (Unstable) [$(APPVEYOR_REPO_COMMIT)]'
 
 # deployment configuration, deploy to github releases
 deploy:
   release: libki-print-station-unstable-v$(APPVEYOR_REPO_COMMIT)
   description: 'Libki Print Station (Unstable) [$(APPVEYOR_REPO_COMMIT)]'
-  artifact: 'deploy\Output\LibkiPrintStation.exe'
+  artifact: 'deploy\Output\Libki_Print_Station_Installer.exe'
   provider: GitHub
   auth_token: $(GITHUB_TOKEN)
   draft: false

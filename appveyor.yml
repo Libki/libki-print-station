@@ -23,7 +23,7 @@ build_script:
   - dir release
   - copy release\LibkiPrintStation.exe deploy\windows\LibkiPrintStation.exe
   - cd deploy\windows
-  - windeployqt LibkiPrintStation.exe
+  - copy C:\Qt\6.9.3\mingw_64\bin\*.dll .
   - cd ..
   - ISCC.exe installer-wizard.iss
 

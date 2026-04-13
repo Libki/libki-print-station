@@ -22,8 +22,7 @@ init:
 
 build_script:
   - qmake6 LibkiPrintStation.pro
-  - dir
-  - dir C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
+  - type Makefile.Release
   - mingw32-make
   - dir release
   - copy release\LibkiPrintStation.exe deploy\windows\LibkiPrintStation.exe

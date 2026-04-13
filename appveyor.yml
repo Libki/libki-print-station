@@ -21,7 +21,7 @@ init:
   - ps: $blockRdp = $false; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 build_script:
-  - qmake6 -v
+  - systeminfo
   - qmake6 LibkiPrintStation.pro
   - mingw32-make
   - dir release

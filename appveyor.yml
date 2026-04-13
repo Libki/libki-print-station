@@ -16,14 +16,14 @@ install:
   - set PATH=%PATH%;C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%QTDIR%\bin;%QTDIR%\lib;"C:\\Program Files (x86)\\Inno Setup 6"
   - copy "%QTDIR%\libstdc++-6.dll" %QTDIR%\bin\
   - copy "%QTDIR%\libgcc*" %QTDIR%\bin\
-  - copy "%QTDIR%\libgcc*" C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\
 
 init:
   - ps: $blockRdp = $false; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 build_script:
-  - systeminfo
   - qmake6 LibkiPrintStation.pro
+  - dir
+  - dir C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
   - mingw32-make
   - dir release
   - copy release\LibkiPrintStation.exe deploy\windows\LibkiPrintStation.exe

@@ -163,7 +163,7 @@ Window {
 
                 Row {
                     topPadding: 10
-                    Button {
+                    Controls.Button {
                         text: qsTr("Log out")
                         anchors.top: logoutGroupBox.top
                         onClicked: function () {
@@ -282,7 +282,7 @@ Window {
 
                     Text {}
 
-                    Button {
+                    Controls.Button {
                         id: login
                         text: qsTr("Log in")
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

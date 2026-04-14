@@ -47,11 +47,11 @@ Window {
             running: image.status === Image.Loading
         }
     }
-    Popup {
+    Controls.Popup {
         id: waitDialog
         modal: true
         focus: true
-        closePolicy: Popup.NoAutoClose
+        closePolicy: Controls.Popup.NoAutoClose
         anchors.centerIn: Overlay.overlay
 
         BusyIndicator {

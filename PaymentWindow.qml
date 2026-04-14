@@ -16,7 +16,7 @@ RowLayout {
     property double currentJamexMachineBalance: 0
 
     // https://doc.qt.io/qt-5/qml-qtquick-controls2-dialog.html
-    QtQtuick.Controls.Dialog {
+    QtQuick.Controls.Dialog {
         id: paymentWindowMessageDialog
         modal: true
         focus: true

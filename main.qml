@@ -242,7 +242,7 @@ Window {
                         text: qsTr("Username:")
                     }
 
-                    TextField {
+                    Controls.TextField {
                         id: textFieldUsername
                         focus: true
                         placeholderText: qsTr("Enter username")
@@ -260,7 +260,7 @@ Window {
                         text: qsTr("Password:")
                     }
 
-                    TextField {
+                    Controls.TextField {
                         id: textFieldPassword
                         echoMode: TextInput.Password
                         placeholderText: qsTr("Enter password")

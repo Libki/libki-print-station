@@ -1,6 +1,7 @@
 import Qt.labs.platform
 import QtQuick 2.12
 import QtQml.Models
+import Qt.labs.qmlmodels as Labs
 import QtQuick.Controls as Controls
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs
@@ -443,34 +444,34 @@ ColumnLayout {
             }
         }
 
-        model: TableModel {
+        model: Labs.TableModel {
             id: printJobsModel
 
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "id"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "pages"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "copies"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "created_on"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "printer"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "cost"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "print_job_id"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "print_job_id"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "cancel_print_job_id"
             }
 

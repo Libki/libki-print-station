@@ -157,7 +157,7 @@ RowLayout {
             text: qsTr("Amount to transfer:")
         }
 
-        SpinBox {
+        Controls.SpinBox {
             id: amountToTransferSpinbox
             from: 0
             value: 0

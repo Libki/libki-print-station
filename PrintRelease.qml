@@ -106,7 +106,7 @@ ColumnLayout {
 
         onWidthChanged: printJobsTableView.forceLayout()
 
-        QtQuick.Controls.Dialog {
+        Controls.Dialog {
             id: popupDialog
             title: qsTr("Job printed")
             modal: true
@@ -116,7 +116,7 @@ ColumnLayout {
 
             x: Math.round((parent.width - width) / 2)
             y: Math.round((parent.height - height) / 3)
-            standardButtons: QtQuick.Controls.Dialog.Ok
+            standardButtons: Controls.Dialog.Ok
 
             Text {
                 id: popupDialogText
@@ -124,14 +124,14 @@ ColumnLayout {
             }
         }
 
-        QtQuick.Controls.Dialog {
+        Controls.Dialog {
             id: dialog
             title: qsTr("Print preview")
             modal: true
             visible: false
             width: parent.width
             height: parent.height
-            standardButtons: QtQuick.Controls.Dialog.Ok
+            standardButtons: Controls.Dialog.Ok
             property var dialogPrintJobId
             contentItem: Item {
                 Image {
@@ -390,7 +390,7 @@ ColumnLayout {
             }
         }
 
-        QtQuick.Controls.Dialog {
+        Controls.Dialog {
             id: confirmCancelDialog
             title: qsTr("Cancel print job?")
             modal: true
@@ -402,7 +402,7 @@ ColumnLayout {
 
             x: Math.round((parent.width - width) / 2)
             y: Math.round((parent.height - height) / 3)
-            standardButtons: QtQuick.Controls.Dialog.Yes | QtQuick.Controls.Dialog.No
+            standardButtons: Controls.Dialog.Yes | Controls.Dialog.No
 
             onAccepted: {
                 const url = Functions.build_print_cancel_url(

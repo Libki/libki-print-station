@@ -152,7 +152,7 @@ RowLayout {
             text: qsTr("$") + parseFloat(backend.jamexBalance).toFixed(2)
         }
 
-        Label {
+        Controls.Label {
             id: labelAmountToTransfer
             text: qsTr("Amount to transfer:")
         }

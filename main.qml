@@ -80,7 +80,7 @@ Window {
                 implicitWidth: mainWindow.width
                 title: qsTr("1. Add funds via coinbox")
 
-                label: Label {
+                label: Controls.Label {
                     x: paymentGroupBox.leftPadding
                     width: paymentGroupBox.availableWidth
                     text: paymentGroupBox.title
@@ -101,7 +101,7 @@ Window {
                 implicitWidth: mainWindow.width
                 title: qsTr("2. Funds available for printing")
 
-                label: Label {
+                label: Controls.Label {
                     font.pointSize: 14
                     x: fundsGroupBox.leftPadding
                     width: fundsGroupBox.availableWidth
@@ -123,7 +123,7 @@ Window {
                 implicitWidth: mainWindow.width
                 title: qsTr("3. Release print jobs to printer")
 
-                label: Label {
+                label: Controls.Label {
                     font.pointSize: 14
                     x: releaseGroupBox.leftPadding
                     width: releaseGroupBox.availableWidth
@@ -148,7 +148,7 @@ Window {
                 implicitWidth: mainWindow.width
                 title: qsTr("4. Log out")
 
-                label: Label {
+                label: Controls.Label {
                     id: logoutTitle
                     font.pointSize: 14
                     x: logoutGroupBox.leftPadding
@@ -237,7 +237,7 @@ Window {
                     anchors.topMargin: 10
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    Label {
+                    Controls.Label {
                         id: labelUsername
                         text: qsTr("Username:")
                     }
@@ -255,7 +255,7 @@ Window {
                         textFieldPassword.focus = true
                     }
 
-                    Label {
+                    Controls.Label {
                         id: labelPassword
                         text: qsTr("Password:")
                     }

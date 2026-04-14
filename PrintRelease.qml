@@ -147,7 +147,7 @@ ColumnLayout {
             DelegateChoice {
                 // First row is always the header, labels only
                 row: 0
-                delegate: Label {
+                delegate: Controls.Label {
                     text: model.display
                     width: 200
                 }
@@ -383,7 +383,7 @@ ColumnLayout {
             }
 
             DelegateChoice {
-                delegate: Label {
+                delegate: Controls.Label {
                     text: model.display
                     width: 200
                 }

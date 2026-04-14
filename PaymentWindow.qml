@@ -2,7 +2,7 @@ import Qt.labs.platform
 
 import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
-import QtQuick.Controls
+import QtQuick.Controls as Controls
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs
 

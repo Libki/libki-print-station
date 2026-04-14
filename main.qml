@@ -75,7 +75,7 @@ Window {
             anchors.fill: parent
             spacing: 6
 
-            GroupBox {
+            Controls.GroupBox {
                 id: paymentGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("1. Add funds via coinbox")
@@ -96,7 +96,7 @@ Window {
                 }
             }
 
-            GroupBox {
+            Controls.GroupBox {
                 id: fundsGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("2. Funds available for printing")
@@ -118,7 +118,7 @@ Window {
                 }
             }
 
-            GroupBox {
+            Controls.GroupBox {
                 id: releaseGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("3. Release print jobs to printer")
@@ -143,7 +143,7 @@ Window {
                 }
             }
 
-            GroupBox {
+            Controls.GroupBox {
                 id: logoutGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("4. Log out")

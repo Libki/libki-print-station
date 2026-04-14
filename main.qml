@@ -43,7 +43,7 @@ Window {
         modality: Qt.ApplicationModal
         buttons: MessageDialog.NoButton
         text: qsTr("Processing, please wait...")
-        BusyIndicator {
+        Controls.BusyIndicator {
             running: image.status === Image.Loading
         }
     }
@@ -54,7 +54,7 @@ Window {
         closePolicy: Controls.Popup.NoAutoClose
         anchors.centerIn: Overlay.overlay
 
-        BusyIndicator {
+        Controls.BusyIndicator {
             running: true
         }
     }

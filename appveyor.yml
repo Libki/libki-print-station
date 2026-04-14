@@ -23,8 +23,8 @@ build_script:
   - dir release
   - copy release\LibkiPrintStation.exe deploy\windows\LibkiPrintStation.exe
   - cd deploy\windows
-  - ps: $blockRdp = $false; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   - windeployqt6 --release LibkiPrintStation.exe
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   - cd ..
   - ISCC.exe installer-wizard.iss
 

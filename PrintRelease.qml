@@ -32,7 +32,7 @@ ColumnLayout {
         text: qsTr('If enough funds are available, printing will start immediately when the "print" button is clicked.')
     }
 
-    Button {
+    Controls.Button {
         id: refreshPrintJobsTableButton
         text: qsTr("Refresh")
         enabled: true
@@ -231,7 +231,7 @@ ColumnLayout {
             }
             DelegateChoice {
                 column: 6
-                delegate: Button {
+                delegate: Controls.Button {
                     text: "Preview"
                     property var printJobId: model.display
                     onClicked: {
@@ -247,7 +247,7 @@ ColumnLayout {
             }
             DelegateChoice {
                 column: 7
-                delegate: Button {
+                delegate: Controls.Button {
                     id: printButton
                     text: qsTr("Print")
                     enabled: false
@@ -371,7 +371,7 @@ ColumnLayout {
 
             DelegateChoice {
                 column: 8
-                delegate: Button {
+                delegate: Controls.Button {
                     text: qsTr("Cancel")
                     enabled: true //Should be status == "Held"
                     property var printJobId: model.display

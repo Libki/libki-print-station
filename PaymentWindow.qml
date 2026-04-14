@@ -212,7 +212,7 @@ RowLayout {
 
         Text {}
 
-        Button {
+        Controls.Button {
             id: transferFundsButton
             text: qsTr("Transfer funds to Libki account")
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

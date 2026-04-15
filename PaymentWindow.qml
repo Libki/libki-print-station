@@ -2,8 +2,7 @@ import Qt.labs.platform
 
 import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
-import QtQuick.Controls 2.5 as MyControls
-import QtQuick.Controls
+import QtQuick.Controls as Controls
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs
 
@@ -17,11 +16,11 @@ RowLayout {
     property double currentJamexMachineBalance: 0
 
     // https://doc.qt.io/qt-5/qml-qtquick-controls2-dialog.html
-    MyControls.Dialog {
+    Controls.Dialog {
         id: paymentWindowMessageDialog
         modal: true
         focus: true
-        standardButtons: MyControls.Dialog.Ok
+        standardButtons: Controls.Dialog.Ok
 
         parent: Overlay.overlay
 
@@ -153,12 +152,12 @@ RowLayout {
             text: qsTr("$") + parseFloat(backend.jamexBalance).toFixed(2)
         }
 
-        Label {
+        Controls.Label {
             id: labelAmountToTransfer
             text: qsTr("Amount to transfer:")
         }
 
-        SpinBox {
+        Controls.SpinBox {
             id: amountToTransferSpinbox
             from: 0
             value: 0
@@ -213,7 +212,7 @@ RowLayout {
 
         Text {}
 
-        Button {
+        Controls.Button {
             id: transferFundsButton
             text: qsTr("Transfer funds to Libki account")
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

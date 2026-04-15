@@ -1,8 +1,8 @@
 import Qt.labs.platform
 import QtQuick 2.12
-import Qt.labs.qmlmodels 1.0
-import QtQuick.Controls 2.5
-import QtQuick.Controls as MyControls
+import QtQml.Models
+import Qt.labs.qmlmodels as Labs
+import QtQuick.Controls as Controls
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs
 
@@ -33,7 +33,7 @@ ColumnLayout {
         text: qsTr('If enough funds are available, printing will start immediately when the "print" button is clicked.')
     }
 
-    Button {
+    Controls.Button {
         id: refreshPrintJobsTableButton
         text: qsTr("Refresh")
         enabled: true
@@ -107,7 +107,7 @@ ColumnLayout {
 
         onWidthChanged: printJobsTableView.forceLayout()
 
-        MyControls.Dialog {
+        Controls.Dialog {
             id: popupDialog
             title: qsTr("Job printed")
             modal: true
@@ -117,7 +117,7 @@ ColumnLayout {
 
             x: Math.round((parent.width - width) / 2)
             y: Math.round((parent.height - height) / 3)
-            standardButtons: MyControls.Dialog.Ok
+            standardButtons: Controls.Dialog.Ok
 
             Text {
                 id: popupDialogText
@@ -125,14 +125,14 @@ ColumnLayout {
             }
         }
 
-        MyControls.Dialog {
+        Controls.Dialog {
             id: dialog
             title: qsTr("Print preview")
             modal: true
             visible: false
             width: parent.width
             height: parent.height
-            standardButtons: MyControls.Dialog.Ok
+            standardButtons: Controls.Dialog.Ok
             property var dialogPrintJobId
             contentItem: Item {
                 Image {
@@ -148,7 +148,7 @@ ColumnLayout {
             DelegateChoice {
                 // First row is always the header, labels only
                 row: 0
-                delegate: Label {
+                delegate: Controls.Label {
                     text: model.display
                     width: 200
                 }
@@ -159,7 +159,7 @@ ColumnLayout {
                     id: printerSelectContainer
                     property var selectedPrinter: model.display
                     property var myModel: model
-                    ComboBox {
+                    Controls.ComboBox {
                         id: cb
                         editable: false
                         width: 200
@@ -232,7 +232,7 @@ ColumnLayout {
             }
             DelegateChoice {
                 column: 6
-                delegate: Button {
+                delegate: Controls.Button {
                     text: "Preview"
                     property var printJobId: model.display
                     onClicked: {
@@ -248,7 +248,7 @@ ColumnLayout {
             }
             DelegateChoice {
                 column: 7
-                delegate: Button {
+                delegate: Controls.Button {
                     id: printButton
                     text: qsTr("Print")
                     enabled: false
@@ -372,7 +372,7 @@ ColumnLayout {
 
             DelegateChoice {
                 column: 8
-                delegate: Button {
+                delegate: Controls.Button {
                     text: qsTr("Cancel")
                     enabled: true //Should be status == "Held"
                     property var printJobId: model.display
@@ -384,14 +384,14 @@ ColumnLayout {
             }
 
             DelegateChoice {
-                delegate: Label {
+                delegate: Controls.Label {
                     text: model.display
                     width: 200
                 }
             }
         }
 
-        MyControls.Dialog {
+        Controls.Dialog {
             id: confirmCancelDialog
             title: qsTr("Cancel print job?")
             modal: true
@@ -403,7 +403,7 @@ ColumnLayout {
 
             x: Math.round((parent.width - width) / 2)
             y: Math.round((parent.height - height) / 3)
-            standardButtons: MyControls.Dialog.Yes | MyControls.Dialog.No
+            standardButtons: Controls.Dialog.Yes | Controls.Dialog.No
 
             onAccepted: {
                 const url = Functions.build_print_cancel_url(
@@ -444,34 +444,34 @@ ColumnLayout {
             }
         }
 
-        model: TableModel {
+        model: Labs.TableModel {
             id: printJobsModel
 
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "id"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "pages"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "copies"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "created_on"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "printer"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "cost"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "print_job_id"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "print_job_id"
             }
-            TableModelColumn {
+            Labs.TableModelColumn {
                 display: "cancel_print_job_id"
             }
 

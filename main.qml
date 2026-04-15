@@ -2,8 +2,7 @@ import Qt.labs.platform
 
 import QtQuick 2.12
 import Qt.labs.qmlmodels 1.0
-import QtQuick.Controls 2.5 as MyControls
-import QtQuick.Controls
+import QtQuick.Controls as Controls
 import QtQuick.Layouts 1.12
 import QtQuick.Window 2.15
 import QtQuick.Dialogs 6.2
@@ -44,18 +43,18 @@ Window {
         modality: Qt.ApplicationModal
         buttons: MessageDialog.NoButton
         text: qsTr("Processing, please wait...")
-        BusyIndicator {
+        Controls.BusyIndicator {
             running: image.status === Image.Loading
         }
     }
-    Popup {
+    Controls.Popup {
         id: waitDialog
         modal: true
         focus: true
-        closePolicy: Popup.NoAutoClose
+        closePolicy: Controls.Popup.NoAutoClose
         anchors.centerIn: Overlay.overlay
 
-        BusyIndicator {
+        Controls.BusyIndicator {
             running: true
         }
     }
@@ -76,12 +75,12 @@ Window {
             anchors.fill: parent
             spacing: 6
 
-            GroupBox {
+            Controls.GroupBox {
                 id: paymentGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("1. Add funds via coinbox")
 
-                label: Label {
+                label: Controls.Label {
                     x: paymentGroupBox.leftPadding
                     width: paymentGroupBox.availableWidth
                     text: paymentGroupBox.title
@@ -97,12 +96,12 @@ Window {
                 }
             }
 
-            GroupBox {
+            Controls.GroupBox {
                 id: fundsGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("2. Funds available for printing")
 
-                label: Label {
+                label: Controls.Label {
                     font.pointSize: 14
                     x: fundsGroupBox.leftPadding
                     width: fundsGroupBox.availableWidth
@@ -119,12 +118,12 @@ Window {
                 }
             }
 
-            GroupBox {
+            Controls.GroupBox {
                 id: releaseGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("3. Release print jobs to printer")
 
-                label: Label {
+                label: Controls.Label {
                     font.pointSize: 14
                     x: releaseGroupBox.leftPadding
                     width: releaseGroupBox.availableWidth
@@ -144,12 +143,12 @@ Window {
                 }
             }
 
-            GroupBox {
+            Controls.GroupBox {
                 id: logoutGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("4. Log out")
 
-                label: Label {
+                label: Controls.Label {
                     id: logoutTitle
                     font.pointSize: 14
                     x: logoutGroupBox.leftPadding
@@ -164,7 +163,7 @@ Window {
 
                 Row {
                     topPadding: 10
-                    Button {
+                    Controls.Button {
                         text: qsTr("Log out")
                         anchors.top: logoutGroupBox.top
                         onClicked: function () {
@@ -238,12 +237,12 @@ Window {
                     anchors.topMargin: 10
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    Label {
+                    Controls.Label {
                         id: labelUsername
                         text: qsTr("Username:")
                     }
 
-                    TextField {
+                    Controls.TextField {
                         id: textFieldUsername
                         focus: true
                         placeholderText: qsTr("Enter username")
@@ -256,12 +255,12 @@ Window {
                         textFieldPassword.focus = true
                     }
 
-                    Label {
+                    Controls.Label {
                         id: labelPassword
                         text: qsTr("Password:")
                     }
 
-                    TextField {
+                    Controls.TextField {
                         id: textFieldPassword
                         echoMode: TextInput.Password
                         placeholderText: qsTr("Enter password")
@@ -283,7 +282,7 @@ Window {
 
                     Text {}
 
-                    Button {
+                    Controls.Button {
                         id: login
                         text: qsTr("Log in")
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

@@ -67,6 +67,8 @@ Window {
 
     Row {
         id: actionsScreen
+        height: parent.height
+        width: parent.width
         visible: false
 
         ColumnLayout {
@@ -80,7 +82,6 @@ Window {
                 title: qsTr("1. Add funds via coinbox")
 
                 label: Label {
-                    font.pointSize: 14
                     x: paymentGroupBox.leftPadding
                     width: paymentGroupBox.availableWidth
                     text: paymentGroupBox.title

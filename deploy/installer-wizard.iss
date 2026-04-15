@@ -8,8 +8,8 @@ AppPublisherURL=http://kylehall.info/
 AppSupportURL=http://libki.org/
 AppUpdatesURL=http://libki.org/
 DefaultDirName={pf}\LibkiPrintStation
-DefaultGroupName=Libki Jamex Client
-OutputBaseFilename=Libki_Jamex_Installer
+DefaultGroupName=Libki Print Station
+OutputBaseFilename=Libki_Print_Station_Installer
 Compression=lzma
 AllowNoIcons=yes
 
@@ -23,7 +23,7 @@ Name: {app}\logs
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Icons]
-Name: "{userdesktop}\Libki Jamex client"; Filename: "{app}\LibkiPrintStation.exe"; Tasks: desktopicon
+Name: "{userdesktop}\Libki Print Station"; Filename: "{app}\LibkiPrintStation.exe"; Tasks: desktopicon
 
 [CustomMessages]
 NameAndVersion=%1 version %2

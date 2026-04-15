@@ -37,7 +37,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     backend.h \
-    jamex/JPClibs.h \
+    "jamex/Linux (x64)/JPClibs.h" \
     logutils.h
 
 INCLUDEPATH += 3rdparty/JPClibs/include

@@ -159,7 +159,7 @@ ColumnLayout {
                     id: printerSelectContainer
                     property var selectedPrinter: model.display
                     property var myModel: model
-                    ComboBox {
+                    Controls.ComboBox {
                         id: cb
                         editable: false
                         width: 200

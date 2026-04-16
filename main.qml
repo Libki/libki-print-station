@@ -102,7 +102,6 @@ Window {
                 title: qsTr("2. Funds available for printing")
 
                 label: Controls.Label {
-                    font.pointSize: 14
                     x: fundsGroupBox.leftPadding
                     width: fundsGroupBox.availableWidth
                     text: fundsGroupBox.title
@@ -124,7 +123,6 @@ Window {
                 title: qsTr("3. Release print jobs to printer")
 
                 label: Controls.Label {
-                    font.pointSize: 14
                     x: releaseGroupBox.leftPadding
                     width: releaseGroupBox.availableWidth
                     text: releaseGroupBox.title

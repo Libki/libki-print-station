@@ -300,7 +300,7 @@ Window {
                                 // log the json response
                                 console.log(o.responseText)
                                 // translate response into object
-                                var d = eval('new Object(' + o.responseText + ')')
+                                var d = JSON.parse(o.responseText)
 
                                 if (d.success) {
                                     loginScreen.visible = false

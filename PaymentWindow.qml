@@ -103,7 +103,7 @@ RowLayout {
             Functions.request(url, function (o) {
                 waitDialog.close()
                 // translate response into an object
-                var d = eval('new Object(' + o.responseText + ')')
+                var d = JSON.parse(o.responseText)
 
                 let messageText
                 if (d.success) {

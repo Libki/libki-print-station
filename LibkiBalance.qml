@@ -69,12 +69,10 @@ GridLayout {
 
     Text {
         id: libkiBalanceLabel
-        font.pointSize: 18
         text: qsTr("Balance in your Libki account:")
     }
 
     Text {
         id: libkiBalanceAmount
-        font.pointSize: 18
     }
 }

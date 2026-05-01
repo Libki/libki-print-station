@@ -101,7 +101,12 @@ QString BackEnd::jamexBalance() {
     jamexConnect();
 
     m_jamexBalance = jpc_read_value_func( jpcHandle );
-    //qDebug() << "JAMEX BALANCE: " << QString::number(m_jamexBalance);
+
+    // A return value of -1 indicates the device is disconnected
+    if ( m_jamexBalance < 0 ) {
+        qDebug() << "JAMEX BALANCE: " << QString::number(m_jamexBalance);
+        jamexIsConnected = false;
+    }
 
     return QString::number(m_jamexBalance);
 }

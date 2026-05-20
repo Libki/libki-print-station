@@ -1,4 +1,4 @@
-.import io.qt.libki_jamex.backend 1.0 as backend
+.import io.qt.libki_jamex.backend 1.0 as Backend
 
 function request(url, callback, type) {
     type = type ? type : 'GET'

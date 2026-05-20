@@ -26,6 +26,8 @@ class BackEnd : public QObject
     Q_PROPERTY(QString userPassword READ userPassword WRITE setUserPassword NOTIFY userPasswordChanged)
     Q_PROPERTY(QString serverAddress READ serverAddress)
     Q_PROPERTY(QString serverApiKey READ serverApiKey)
+    Q_PROPERTY(QString customHeaderName READ customHeaderName)
+    Q_PROPERTY(QString customHeaderValue READ customHeaderValue)
     Q_PROPERTY(QString mainWindowVisibility READ mainWindowVisibility)
     Q_PROPERTY(QString appPreventExit READ appPreventExit)
     Q_PROPERTY(QString appBackdoorUsername READ appBackdoorUsername)
@@ -50,6 +52,9 @@ public:
     QString serverAddress();
 
     QString serverApiKey();
+    
+    QString customHeaderName();
+    QString customHeaderValue();
 
     QString mainWindowVisibility();
     QString appPreventExit();

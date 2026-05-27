@@ -1,3 +1,5 @@
+.import io.qt.libki_jamex.backend 1.0 as Backend
+
 function request(url, callback, type) {
     type = type ? type : 'GET'
 
@@ -8,6 +10,7 @@ function request(url, callback, type) {
         }
     })(xhr);
     xhr.open(type, url, true);
+    xhr.setRequestHeader(backend.customHeaderName, backend.customHeaderValue);
     xhr.send('');
 }
 

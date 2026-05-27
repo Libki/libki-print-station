@@ -151,6 +151,18 @@ QString BackEnd::serverApiKey() {
     return libkiServerApiKey;
 }
 
+QString BackEnd::customHeaderName() {
+    QString headerName = settings.value("server/customHeaderName").toString();
+    qDebug() << "LIBKI CUSTOM HEADER NAME: " << headerName;
+    return headerName;
+}
+
+QString BackEnd::customHeaderValue() {
+    QString headerValue = settings.value("server/customHeaderValue").toString();
+    qDebug() << "LIBKI CUSTOM HEADER VALUE: " << headerValue;
+    return headerValue;
+}
+
 bool BackEnd::jamexReturnBalance() {
     jpc_return_value_func( jpcHandle );
     return true;

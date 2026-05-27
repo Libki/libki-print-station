@@ -63,8 +63,8 @@ begin
   ServerPage.Add('API Request Header Value:', False);
   ServerPage.Values[0] := GetIniString('server', 'address', '', IniPath);
   ServerPage.Values[1] := GetIniString('server', 'api_key', '', IniPath);
-  ServerPage.Values[2] := GetIniString('server', 'api_header_name', '', IniPath);
-  ServerPage.Values[3] := GetIniString('server', 'api_header_value', '', IniPath);
+  ServerPage.Values[2] := GetIniString('server', 'customHeaderName', '', IniPath);
+  ServerPage.Values[3] := GetIniString('server', 'customHeaderValue', '', IniPath);
 end;
 
 function GetAddress(Param: String): String;

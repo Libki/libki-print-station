@@ -55,6 +55,8 @@ begin
     'Please specify the Libki server data.');
   ServerPage.Add('Address:', False);
   ServerPage.Add('API Key:', False);
+  ServerPage.Values[0] := GetIniString("server", "address", "", "{commonappdata}\Libki\Libki Print Station.ini");
+  ServerPage.Values[1] := GetIniString("server", "api_key", "", "{commonappdata}\Libki\Libki Print Station.ini");
 end;
 
 function GetAddress(Param: String): String;

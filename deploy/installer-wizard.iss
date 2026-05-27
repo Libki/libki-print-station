@@ -47,9 +47,11 @@ Filename: "{commonappdata}\Libki\Libki Print Station.ini"; Section: "font"; Key:
 [Code]
 var
   ServerPage: TInputQueryWizardPage;
+  IniPath: string;
 
 procedure InitializeWizard;
 begin
+  IniPath := ExpandConstant('{commonappdata}\Libki\Libki Print Station.ini');
   { Create the pages }
   
   ServerPage := CreateInputQueryPage(wpWelcome,
@@ -59,10 +61,10 @@ begin
   ServerPage.Add('API Key:', False);
   ServerPage.Add('API Request Header Name:', False);
   ServerPage.Add('API Request Header Value:', False);
-  ServerPage.Values[0] := GetIniString("server", "address", "", "{commonappdata}\Libki\Libki Print Station.ini");
-  ServerPage.Values[1] := GetIniString("server", "api_key", "", "{commonappdata}\Libki\Libki Print Station.ini");
-  ServerPage.Values[2] := GetIniString("server", "api_header_name", "", "{commonappdata}\Libki\Libki Print Station.ini");
-  ServerPage.Values[3] := GetIniString("server", "api_header_value", "", "{commonappdata}\Libki\Libki Print Station.ini");
+  ServerPage.Values[0] := GetIniString('server', 'address', '', IniPath);
+  ServerPage.Values[1] := GetIniString('server', 'api_key', '', IniPath);
+  ServerPage.Values[2] := GetIniString('server', 'api_header_name', '', IniPath);
+  ServerPage.Values[3] := GetIniString('server', 'api_header_value', '', IniPath);
 end;
 
 function GetAddress(Param: String): String;

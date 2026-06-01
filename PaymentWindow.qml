@@ -149,7 +149,7 @@ RowLayout {
 
         Text {
             id: jamexBalanceAmount
-            text: qsTr("$") + parseFloat(backend.jamexBalance).toFixed(2)
+            text: qsTr("$") + parseFloat(currentJamexMachineBalance).toFixed(2)
         }
 
         Controls.Label {

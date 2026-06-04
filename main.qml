@@ -80,6 +80,13 @@ Window {
                 implicitWidth: mainWindow.width
                 title: qsTr("1. Add funds via coinbox")
 
+                background: Rectangle {
+                  color: "transparent"
+                  border.color: "transparent"
+                  border.width: 0
+                  smooth: false
+                }
+
                 label: Controls.Label {
                     x: paymentGroupBox.leftPadding
                     width: paymentGroupBox.availableWidth
@@ -101,6 +108,13 @@ Window {
                 implicitWidth: mainWindow.width
                 title: qsTr("2. Funds available for printing")
 
+                background: Rectangle {
+                  color: "transparent"
+                  border.color: "transparent"
+                  border.width: 0
+                  smooth: false
+                }
+
                 label: Controls.Label {
                     x: fundsGroupBox.leftPadding
                     width: fundsGroupBox.availableWidth
@@ -121,6 +135,13 @@ Window {
                 id: releaseGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("3. Release print jobs to printer")
+
+                background: Rectangle {
+                  color: "transparent"
+                  border.color: "transparent"
+                  border.width: 0
+                  smooth: false
+                }
 
                 label: Controls.Label {
                     x: releaseGroupBox.leftPadding
@@ -145,6 +166,13 @@ Window {
                 id: logoutGroupBox
                 implicitWidth: mainWindow.width
                 title: qsTr("4. Log out")
+
+                background: Rectangle {
+                  color: "transparent"
+                  border.color: "transparent"
+                  border.width: 0
+                  smooth: false
+                }
 
                 label: Controls.Label {
                     id: logoutTitle

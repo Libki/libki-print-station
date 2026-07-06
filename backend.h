@@ -85,6 +85,7 @@ private:
     double m_jamexBalance;
 
     bool jamexIsConnected;
+    bool jamexClosed;
 
     bool jamexDeductValueSucceeded;
     bool jamexAddValueSucceeded;

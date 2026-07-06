@@ -104,7 +104,10 @@ QString BackEnd::jamexBalance() {
 
     // A return value of -1 indicates the device is disconnected
     if ( m_jamexBalance < 0 ) {
-        qDebug() << "JAMEX BALANCE: " << QString::number(m_jamexBalance);
+        qDebug() << "Negative balance found for handle: " << jpcHandle;
+        // Attempt to close the existing handle
+        jamexClosed = jpc_close_func(jpcHandle);
+        qDebug() << "RESULT OF jpc_close: " << jamexClosed;
         jamexIsConnected = false;
     }
 
@@ -153,13 +156,13 @@ QString BackEnd::serverApiKey() {
 
 QString BackEnd::customHeaderName() {
     QString headerName = settings.value("server/customHeaderName").toString();
-    qDebug() << "LIBKI CUSTOM HEADER NAME: " << headerName;
+//    qDebug() << "LIBKI CUSTOM HEADER NAME: " << headerName;
     return headerName;
 }
 
 QString BackEnd::customHeaderValue() {
     QString headerValue = settings.value("server/customHeaderValue").toString();
-    qDebug() << "LIBKI CUSTOM HEADER VALUE: " << headerValue;
+//    qDebug() << "LIBKI CUSTOM HEADER VALUE: " << headerValue;
     return headerValue;
 }
 

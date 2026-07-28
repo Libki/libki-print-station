@@ -259,7 +259,7 @@ ColumnLayout {
                     Connections {
                         // printJobsTableView emits a signal to tell each print button to evaluate if it should be enabled
                         target: printJobsTableView
-                        onEvaluateEnabled: function (rowChanged) {
+                        function onEvaluateEnabled(rowChanged) {
                             let row = printButton.myModel.row
                             let do_eval = (!rowChanged) || (row == rowChanged)
 

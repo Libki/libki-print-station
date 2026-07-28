@@ -102,6 +102,8 @@ RowLayout {
             waitDialog.open()
             Functions.request(url, function (o) {
                 waitDialog.close()
+                // log the response text
+                console.log(o.responseText)
                 // translate response into an object
                 var d = eval('new Object(' + o.responseText + ')')
 

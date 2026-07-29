@@ -236,12 +236,12 @@ QString BackEnd::appPreventExit() {
 
 QString BackEnd::appBackdoorUsername() {
     QString setting = settings.value("client/backdoor_username").toString();
-    qDebug() << "CLIENT BACKDOOR USERNAME: " << setting;
+//    qDebug() << "CLIENT BACKDOOR USERNAME: " << setting;
     return setting;
 }
 
 QString BackEnd::appBackdoorPassword() {
     QString setting = settings.value("client/backdoor_password").toString();
-    qDebug() << "CLIENT BACKDOOR PASSWORD: " << setting;
+//    qDebug() << "CLIENT BACKDOOR PASSWORD: " << setting;
     return setting;
 }

@@ -151,7 +151,7 @@ RowLayout {
 
         Text {
             id: jamexBalanceAmount
-            text: qsTr("$") + parseFloat(currentJamexMachineBalance).toFixed(2)
+            text: qsTr("$") + paymentWindow.currentJamexMachineBalance.toFixed(2)
         }
 
         Controls.Label {
@@ -163,7 +163,7 @@ RowLayout {
             id: amountToTransferSpinbox
             from: 0
             value: 0
-            to: backend.jamexBalance * 100
+            to: paymentWindow.currentJamexMachineBalance.toFixed(2) * 100
             stepSize: 1
             editable: true
 

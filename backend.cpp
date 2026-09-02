@@ -25,28 +25,33 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
 
     jamexIsConnected = false;
 
-    if (QLibrary::isLibrary("JPClibs.dll")) {
-//      qDebug() << "JAMEX LIBRARY FOUND!";
-    } else {
-        qDebug() << "JAMEX LIBRARY NOT FOUND!?!";
-    }
+    jamexLibLoad();
+}
 
-    QLibrary jamexLib("JPClibs");
-    jpc_get_handle_func = (JpcGetHandleFunction) jamexLib.resolve("jpc_get_handle");
-    jpc_open_func = (JpcOpenFunction) jamexLib.resolve("jpc_open");
-    jpc_close_func = (JpcCloseFunction) jamexLib.resolve("jpc_close");
-    jpc_open_port_func = (JpcOpenPortFunction) jamexLib.resolve("jpc_open_port");
-    jpc_get_error_func = (JpcGetErrorFunction) jamexLib.resolve("jpc_get_error");
-    jpc_read_value_func = (JpcReadValueFunction) jamexLib.resolve("jpc_read_value");
-    jpc_deduct_value_func = (JpcDeductValueFunction) jamexLib.resolve("jpc_deduct_value");
-    jpc_add_value_func = (JpcAddValueFunction) jamexLib.resolve("jpc_add_value");
-    jpc_return_value_func = (JpcReturnValueFunction) jamexLib.resolve("jpc_return_value");
-    jpc_set_options_func = (JpcSetOptionsFunction) jamexLib.resolve("jpc_set_options");
+void BackEnd::jamexLibLoad() {
+    QString jamexLibPath = settings.value("jpc/path").toString() != "" ? settings.value("jpc/path").toString() : "C:/Program Files (x86)/LibkiPrintStation/JPClibs.dll";
 
-    if (jamexLib.load()) {
-//      qDebug() << "Jamex library loaded!";
+    if (QLibrary::isLibrary(jamexLibPath)) {
+        //qDebug() << "JAMEX LIBRARY FOUND!";
+        QLibrary jamexLib(jamexLibPath);
+        jpc_get_handle_func = (JpcGetHandleFunction) jamexLib.resolve("jpc_get_handle");
+        jpc_open_func = (JpcOpenFunction) jamexLib.resolve("jpc_open");
+        jpc_close_func = (JpcCloseFunction) jamexLib.resolve("jpc_close");
+        jpc_open_port_func = (JpcOpenPortFunction) jamexLib.resolve("jpc_open_port");
+        jpc_get_error_func = (JpcGetErrorFunction) jamexLib.resolve("jpc_get_error");
+        jpc_read_value_func = (JpcReadValueFunction) jamexLib.resolve("jpc_read_value");
+        jpc_deduct_value_func = (JpcDeductValueFunction) jamexLib.resolve("jpc_deduct_value");
+        jpc_add_value_func = (JpcAddValueFunction) jamexLib.resolve("jpc_add_value");
+        jpc_return_value_func = (JpcReturnValueFunction) jamexLib.resolve("jpc_return_value");
+        jpc_set_options_func = (JpcSetOptionsFunction) jamexLib.resolve("jpc_set_options");
+
+        if (jamexLib.load()) {
+            //qDebug() << "Jamex library loaded!";
+        } else {
+            qDebug() << "Failed to load Jamex library!";
+        }
     } else {
-        qDebug() << "Failed to load Jamex library!";
+        qDebug() << "JAMEX LIBRARY NOT FOUND!?! Tested Path: " << jamexLibPath;
     }
 }
 
@@ -75,6 +80,9 @@ void BackEnd::jamexConnect() {
 
                 //TODO: Add some kind of popup if there is an error connecting?
             }
+        } else {
+            qDebug() << "No handle function!";
+            jamexLibLoad();
         }
     }
 }
@@ -99,16 +107,22 @@ void BackEnd::fetchJamexBalance() {
 // This method just returns the amount we have stored internally
 QString BackEnd::jamexBalance() {
     jamexConnect();
+    
+    if (jamexIsConnected) {
 
-    m_jamexBalance = jpc_read_value_func( jpcHandle );
+      m_jamexBalance = jpc_read_value_func( jpcHandle );
 
-    // A return value of -1 indicates the device is disconnected
-    if ( m_jamexBalance < 0 ) {
-        qDebug() << "Negative balance found for handle: " << jpcHandle;
-        // Attempt to close the existing handle
-        jamexClosed = jpc_close_func(jpcHandle);
-        qDebug() << "RESULT OF jpc_close: " << jamexClosed;
-        jamexIsConnected = false;
+      // A return value of -1 indicates the device is disconnected
+      if ( m_jamexBalance < 0 ) {
+          qDebug() << "Negative balance found for handle: " << jpcHandle;
+         // Attempt to close the existing handle
+          jamexClosed = jpc_close_func(jpcHandle);
+          qDebug() << "RESULT OF jpc_close: " << jamexClosed;
+          jamexIsConnected = false;
+      }
+
+    } else {
+      m_jamexBalance = -9;
     }
 
     return QString::number(m_jamexBalance);

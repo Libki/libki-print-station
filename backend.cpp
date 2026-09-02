@@ -48,7 +48,7 @@ void BackEnd::jamexLibLoad() {
         if (jamexLib.load()) {
             //qDebug() << "Jamex library loaded!";
         } else {
-            qDebug() << "Failed to load Jamex library!";
+            qDebug() << "Failed to load Jamex library: " << QLibrary::errorString();
         }
     } else {
         qDebug() << "JAMEX LIBRARY NOT FOUND!?! Tested Path: " << jamexLibPath;

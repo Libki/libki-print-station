@@ -29,7 +29,7 @@ BackEnd::BackEnd(QObject * parent): QObject(parent) {
 }
 
 void BackEnd::jamexLibLoad() {
-    QString jamexLibPath = settings.value("jpc/path").toString() != "" ? settings.value("jpc/path").toString() : "C:/Program Files (x86)/LibkiPrintStation/JPClibs.dll";
+    QString jamexLibPath = settings.value("jpc/path").toString() != "" ? settings.value("jpc/path").toString() : "C:\\Program Files (x86)\\LibkiPrintStation\\JPClibs.dll";
 
     if (QLibrary::isLibrary(jamexLibPath)) {
         //qDebug() << "JAMEX LIBRARY FOUND!";
@@ -48,7 +48,7 @@ void BackEnd::jamexLibLoad() {
         if (jamexLib.load()) {
             //qDebug() << "Jamex library loaded!";
         } else {
-            qDebug() << "Failed to load Jamex library: " << QLibrary::errorString();
+            qDebug() << "Failed to load Jamex library: " << jamexLib.errorString();
         }
     } else {
         qDebug() << "JAMEX LIBRARY NOT FOUND!?! Tested Path: " << jamexLibPath;

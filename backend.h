@@ -94,6 +94,7 @@ private:
 
     QSettings settings;
 
+    void jamexLibLoad();
     void jamexConnect();
     void jamexDisconnect();
 

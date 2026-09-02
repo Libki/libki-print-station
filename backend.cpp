@@ -49,9 +49,11 @@ void BackEnd::jamexLibLoad() {
             //qDebug() << "Jamex library loaded!";
         } else {
             qDebug() << "Failed to load Jamex library: " << jamexLib.errorString();
+            m_jamexBalance = -9.00;
         }
     } else {
         qDebug() << "JAMEX LIBRARY NOT FOUND!?! Tested Path: " << jamexLibPath;
+        m_jamexBalance = -8.00;
     }
 }
 
@@ -121,8 +123,6 @@ QString BackEnd::jamexBalance() {
           jamexIsConnected = false;
       }
 
-    } else {
-      m_jamexBalance = -9;
     }
 
     return QString::number(m_jamexBalance);

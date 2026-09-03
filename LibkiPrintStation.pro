@@ -41,7 +41,7 @@ HEADERS += \
     "jamex/Linux (x64)/JPClibs.h" \
     logutils.h
 
-INCLUDEPATH += "jamex/Linux (x64)/jpclibs.h"
+INCLUDEPATH += "jamex/Linux (x64)"
 
 LIBS += -L"deploy/windows" -lJPCLibs
 

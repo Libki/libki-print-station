@@ -41,7 +41,9 @@ HEADERS += \
     "jamex/Linux (x64)/JPClibs.h" \
     logutils.h
 
-INCLUDEPATH += 3rdparty/JPClibs/include
+INCLUDEPATH += "jamex/Linux (x64)/jpclibs.h"
+
+LIBS += -L"deploy/windows" -lJPCLibs
 
 DISTFILES += \
     libki_print.ico

@@ -70,6 +70,11 @@ void BackEnd::jamexConnect() {
                 is_open = jpc_open_func(jpcHandle);
                 qDebug() << "RESULT OF jpc_open: " << is_open;
 
+                QString comPort = settings.value("jpc/comPort").toString();
+                if ( ! is_open && comPort != "" ) {
+                    is_open = jpc_open_port_func(jpcHandle, comPort.toStdString().data());
+                }
+
                 if (is_open) {
                     jamexIsConnected = true;
                 } else {

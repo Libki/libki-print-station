@@ -105,7 +105,7 @@ RowLayout {
                 // log the response text
                 console.log(o.responseText)
                 // translate response into an object
-                var d = eval('new Object(' + o.responseText + ')')
+                var d = JSON.parse(o.responseText)
 
                 let messageText
                 if (d.success) {

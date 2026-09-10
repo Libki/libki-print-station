@@ -53,7 +53,7 @@ GridLayout {
                                                              password)
 
         Functions.request(url, function (o) {
-            var data = eval('new Object(' + o.responseText + ')')
+            var data = JSON.parse(o.responseText)
 
             let first_check = balance === "";
             balance = parseFloat(data.funds)
